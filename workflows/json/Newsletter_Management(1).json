@@ -1,0 +1,867 @@
+{
+  "name": "Newsletter_Management",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "add-new-newsletter-subscriber",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        4304,
+        480
+      ],
+      "id": "9d622789-f6ba-47d9-b869-7ef3e0e97ec3",
+      "name": "Webhook",
+      "webhookId": "7514bd57-3e52-494b-8b77-aa39c278d61d"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fullName = $json.full_name || '';\nconst firstName = fullName.trim().split(' ')[0] || '';\n\nreturn [\n  {\n    json: {\n      firstName\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4720,
+        480
+      ],
+      "id": "43c12b00-2912-4466-b70d-c9f38ad43ec1",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8c94ddf0-bf08-4466-9912-14a9706c116a",
+              "name": "full_name",
+              "value": "={{ $json.body.data.properties.Name.title[0].plain_text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4528,
+        480
+      ],
+      "id": "b431d630-6556-4bd2-89de-903b1e281d0c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "delete-newsletter-subscriber",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        4352,
+        1408
+      ],
+      "id": "8c54b0fd-eb0d-47f7-8872-3c4812bf9387",
+      "name": "Webhook1",
+      "webhookId": "7514bd57-3e52-494b-8b77-aa39c278d61d"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8c94ddf0-bf08-4466-9912-14a9706c116a",
+              "name": "pub_id",
+              "value": "={{ $json.body.data.pubID }}",
+              "type": "string"
+            },
+            {
+              "id": "83f9d56c-e0c5-451f-ac08-a7af05c482cc",
+              "name": "sub_id",
+              "value": "={{ $json.body.data.subID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4560,
+        1408
+      ],
+      "id": "5519afd2-fc84-4104-aaef-bfd5a6ab6783",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": " https://api.beehiiv.com/v2/publications/pub_00000000-0000-0000-0000-000000000000/subscriptions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <API KEY>"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": " accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"{{ $('Code').item.json.firstName }}\",\n  \"email\": \"{{ $('Webhook').item.json.body.data.properties.Email.email }}\",\n  \"utm_medium\": \"{{ $('Webhook').item.json.body.data.properties.Source.multi_select[0].name }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4960,
+        480
+      ],
+      "id": "57f6e8f6-3d50-4faa-a842-7981e90c537d",
+      "name": "create subscription"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "https://api.beehiiv.com/v2/publications/delete-subscription",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <token>"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": " accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "publication_id",
+              "value": "={{ $('Edit Fields1').item.pub_id }}"
+            },
+            {
+              "name": "subscription_id",
+              "value": "={{ $('Edit Fields1').item.sub_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4912,
+        1408
+      ],
+      "id": "93732545-7d8b-40e8-8c3b-9f50873ba5d1",
+      "name": "delete subscription"
+    },
+    {
+      "parameters": {
+        "content": "# Delete Subscription Webhook\n\nThis webhook deletes a Beehiiv subscription using two required parameters.\n\n## How to Use\n\nSend a `POST` request to the webhook URL from your CRM or any connected system.\n\n### Required Parameters\n\n- `sqbID` (case-sensitive): The Subscription ID you want to delete  \n  Example: `sub_00000000-0000-0000-0000-000000000000`\n\n- `pubID` (case-sensitive): The Publication ID the subscription belongs to  \n  Example: `pub_00000000-0000-0000-0000-000000000000`\n\n### Example Payload\n\n```json\n{\n  \"sqbID\": \"sub_00000000-0000-0000-0000-000000000000\",\n  \"pubID\": \"pub_00000000-0000-0000-0000-000000000000\"\n}\n",
+        "height": 620,
+        "width": 560
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3664,
+        1248
+      ],
+      "id": "eeba5d84-18a5-468e-9d9a-19e54c8b90ac",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Create Subscription Webhook\n\nThis webhook allows you to create a new subscriber in Beehiiv using basic user data.\n\n## How to Use\n\nSend a `POST` request to the webhook URL with the following parameters in the payload.\n\n### Required Fields\n\n- `email`: The email address of the subscriber.\n- `firstName`: The subscriber’s first name.\n\n### Name Handling Logic\n\nYou have two options for passing the subscriber's name:\n\n1. **Pass the full name**  \n   - If you only have the full name, we will automatically extract the first name using the internal code node in the workflow.\n\n2. **Pass the first name directly**  \n   - If you already have the first name, pass it as `firstName` and **remove the code node** from the workflow to skip the name parsing step.\n\n### Optional Fields\n\n- `utm_medium`: Used for UTM tracking (e.g., referral source or campaign origin).\n\n### Example Payload\n\n```json\n{\n  \"name\": \"Alex Johnson\",\n  \"email\": \"alex@example.com\",\n  \"utm_medium\": \"LinkedIn Ads\"\n}\n",
+        "height": 920,
+        "width": 620
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3600,
+        80
+      ],
+      "id": "f038effe-d715-45f9-9bbb-9c7cd7b1e59b",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "ef5b16f2-33d6-49a4-83d4-4903a5bad9dd",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        1904,
+        384
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "d983a070-7552-4c10-9c4e-10ed04692841",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        2944,
+        640
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "086cab90-da9b-40d5-b1eb-f622548c0fe3",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        3104,
+        624
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "378d0b3a-559f-435e-8318-cc522e0b7338",
+      "name": "Recursive Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "position": [
+        3248,
+        768
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "id": "7ea8c7f7-03cb-4d75-8874-05de0ffe3551",
+      "name": "Get Articles Daily",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        1472,
+        384
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                2
+              ]
+            }
+          ]
+        }
+      },
+      "id": "dde5aee6-ebef-4738-a510-29c2ff1a0878",
+      "name": "Send Weekly Summary",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        1600,
+        1280
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Create me a weekly newsletter based on this weeks article & news",
+        "options": {
+          "systemMessage": "You are an expert editorial AI designed to craft high-quality, mobile-friendly, weekly technology newsletters. Your output must be clean, logically structured, highly readable, and fully professional — with no emojis, no unnecessary filler, and no clickbait language.\n\nYour objective is to summarize the most important technology news from the past 7 days, based on structured content retrieved from a vector database. This content includes titles, summaries, links, source sites, and topics (e.g., AI, Gadgets, Startups, Gaming). Each item has been pre-processed from a trusted RSS feed.\n\nFollow this format strictly:\n\n---\n\n# Weekly Tech Digest – [Insert Week Range: e.g., June 23–29]\n\n## Top Highlights\nWrite 3–5 detailed, story-style writeups of the biggest news.  \nEach should be a short paragraph (3–6 sentences) and should:\n- Explain the context\n- Summarize what happened\n- Briefly mention implications or reactions\n- Link to the original source in parentheses at the end\n\nExample:\n> OpenAI introduced a new tool for enterprise teams that allows easier agent deployment without engineering overhead. The launch marks a strategic shift toward infrastructure offerings aimed at replacing Zapier and traditional RPA platforms. (via TechCrunch)\n\n---\n\n## Quick News Bursts\nWrite 7–10 short-form bullets.  \nEach should cover smaller or less critical news items in 1–2 sentences.  \nAvoid clickbait. Just the facts, compactly written. Include source links in parentheses.\n\nExample:\n- Discord started testing paid AI features for server moderation. (via The Verge)\n- Nvidia announced its Blackwell successor will be released in early 2026. (via Wired)\n\n---\n\n## Industry Movements & Launches\nSummarize notable company activity — funding, launches, partnerships, shutdowns.  \nUse compact paragraph form or bullets based on volume.  \nGroup similar topics together if needed (e.g., AI startups, layoffs, new tools).\n\n---\n\n## Editor’s Summary\nEnd with a short human-style reflection (2–4 sentences) that frames the overall week:  \ntrends, tone, and a forward-looking note.\n\nExample:\n> This week marked a clear consolidation of AI infrastructure efforts, with major players aiming to become indispensable parts of the new stack. Expect the competition between OpenAI, Meta, and smaller LLM toolmakers to heat up as new funding announcements land next week.\n\n---\n\n### Rules:\n- Use plain, professional language with zero emojis.\n- Never ask questions or use rhetorical statements.\n- Never include “you” or “we” — stay in third person.\n- Prioritize clarity, brevity, and factuality.\n- Do not hallucinate any news. Only use what's in the data you received.\n- Format output in plain text, markdown-compatible (for later email/Google Doc rendering).\n\n---\n\nInput will include a structured list of news items with metadata:\n- Title\n- Summary\n- Source\n- URL\n- Date\n- Topics (tags)\n\nYou must use only this input to generate the output.\n\nYour role is not to write like a journalist but like a concise editor — filtering noise, structuring signal, and delivering clarity.\n"
+        }
+      },
+      "id": "c9bae676-939b-456f-b076-d0f1f2b04110",
+      "name": "News reader AI",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2080,
+        1280
+      ],
+      "typeVersion": 1.9
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "358efd40-cde9-4039-b2b8-6a2426107bcf",
+      "name": "Convert Response to an Email-Friendly Format",
+      "type": "n8n-nodes-base.markdown",
+      "position": [
+        2480,
+        1280
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "d906206d-678f-47a0-b3c9-23e855dca661",
+      "name": "Your topics of interest",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1824,
+        1280
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "92902dbc-a493-4a3c-82e6-c37b24efda7c",
+      "name": "Set Tech News RSS Feeds",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1680,
+        384
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "9fb8e046-332d-4ebe-8968-0c7ddec8d4fe",
+      "name": "Read RSS News Feeds",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        2128,
+        384
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "4d8b7fcc-acdc-447c-bb40-9cc0f1114a80",
+      "name": "Embeddings OpenAI2",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        2224,
+        1680
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5c5811de-c092-4fd9-83a0-9b68266c5274",
+              "name": "Articles",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4d36dc6e-fe3b-43b8-a8a6-a7ef54b22fb4",
+      "name": "Set and Normalize Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2352,
+        384
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        3072,
+        384
+      ],
+      "id": "bf824861-2dca-4903-a005-0ebeabae975c",
+      "name": "Pinecone Vector Store"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use this tool to get this week's news, including latest events and articles",
+        "pineconeIndex": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "topK": 40,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        2304,
+        1504
+      ],
+      "id": "9f547a2e-6a8b-47a5-9303-20a9c4a82fa5",
+      "name": "Pinecone Vector Store1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2784,
+        1280
+      ],
+      "id": "9e851ac3-dda9-431f-86f9-3333480d1a3d",
+      "name": "add newletler content to google doc"
+    },
+    {
+      "parameters": {
+        "content": "# Personalized Weekly Tech Newsletter Automation (n8n + Pinecone + aiation + Google Docs)\n\nThis automation curates and summarizes weekly tech news into a clean, personalized newsletter using n8n, Pinecone, and aiation. The final content is saved directly to Google Docs instead of being sent via email.\n\n---\n\n## Overview\n\nThis workflow scrapes daily technology news from curated RSS feeds and stores them in a Pinecone vector database. Each week, it queries this vector store using your interests, summarizes the content using aiation, and formats the results into an email-style newsletter saved inside a Google Doc.\n\n---\n\n## Workflow Architecture\n\n### 1. **Daily News Ingestion**\n- **Trigger**: Scheduled daily trigger (Cron)\n- **Fetch**: Collect articles from RSS feeds (e.g., TechCrunch, The Verge, Wired)\n- **Processing**:\n  - Normalize articles: extract `title`, `summary`, `link`, and `publish date`\n  - Generate vector embeddings via OpenAI\n  - Store enriched articles in **Pinecone** with metadata (date, source, topic keywords)\n\n### 2. **Weekly Newsletter Generation**\n- **Trigger**: Weekly scheduler (e.g., every Sunday at 9 AM)\n- **Query**:\n  - Filter Pinecone vectors for articles from the past 7 days\n  - Use semantic search based on personalized interest topics (e.g., AI, gaming, devices)\n\n- **Summarization**:\n  - Query results passed into **aiation** prompt\n  - aiation generates a structured summary optimized for newsletter formatting\n  - Output is formatted into clean, email-style HTML or markdown\n\n- **Storage**:\n  - The newsletter content is saved directly into a **Google Doc**\n  - Each document includes the current date in the title (e.g., `Weekly Tech Digest - Jun 29`)\n\n---\n\n## Configuration Steps\n\n### Step 1: Connect Services\n- **OpenAI**: For generating vector embeddings (daily) and summarization (weekly)\n- **Pinecone**: Used for vector storage and semantic querying\n- **Google Docs**: To store the final formatted newsletter\n\n### Step 2: Set RSS Sources\n- Open the `Set Tech News RSS Feeds` node\n- Customize the feed list (add/remove URLs)\n\n### Step 3: Define Interests\n- Open the `Your Topics of Interest` node\n- Update your interest tags (e.g., `[\"AI\", \"Startups\", \"Mobile Devices\"]`)\n- These are used to filter relevant content from Pinecone\n\n### Step 4: Add Google Docs Node\n- Configure Google OAuth2 credentials in n8n\n- Use the \"Google Docs - Create Document\" node\n- Dynamically set the document title (e.g., using a timestamp or week number)\n- Insert aiation output as the document body\n\n---\n\n## Optional Enhancements\n\n- **Persistent Pinecone Storage**: Ensure Pinecone is configured with a namespace or metadata-based time filters to support long-term querying.\n- **Quality Filtering**: Add logic to skip clickbait titles or overly short articles.\n- **Custom Prompt Tuning**: Tailor the aiation prompt for different tones: professional, casual, or internal-only.\n- **Multi-channel Output**: In the future, extend the output to Slack, Notion, or Telegram instead of Google Docs.\n\n---\n\n## Requirements\n\n- OpenAI API Key (for embeddings and summarization)\n- Pinecone API Key and project configuration\n- Google Docs connected via n8n OAuth2 credentials\n- RSS feed URLs of desired tech sources\n\n---\n\n## Summary\n\nThis updated n8n workflow delivers a high-quality, distraction-free, personalized newsletter each week. All articles are intelligently filtered and summarized using LLMs, stored semantically in Pinecone, and written into a well-formatted Google Doc—perfect for internal sharing or future publishing.\n\n",
+        "height": 1960,
+        "width": 1140
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "973fbc67-822b-4885-9bba-8f11686af460",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Current time - {{ $now }}\nArticles- {{ $('Set and Normalize Fields').item.Articles }}",
+        "options": {
+          "systemMessage": "You are an advanced editorial AI agent responsible for processing raw technology news articles collected via RSS feeds. Your role is to analyze, enrich, and format these items into highly detailed, date-anchored editorial entries for use in a weekly newsletter.\n\nYou are not summarizing. You are documenting — providing depth, clarity, and context for each story so that another AI (the newsletter composer) can later transform your output into a public-facing, structured newsletter.\n\n---\n\n## Scenario\n\nAll the information you are processing is intended for a *weekly tech newsletter*. You are preparing inputs that will be used to generate a newsletter covering only the events of the current week.\n\nYou will receive a variable indicating the **current timestamp** in this format:\n\n`Current Date: June 29, 2025`\n\nUse this to ensure each news item you process is **within the same week**. If an article is older than 7 days before this date, ignore it. Only process and enrich articles published within this time window.\n\n---\n\n## Output Format for Each Article\n\nYou must generate one detailed editorial entry per article using this structure:\n\n[Date: YYYY-MM-DD] [Title of the article]\n\nSource: [Name of the publication]\n\nTopics: [Comma-separated list of tags, e.g., AI, Gadgets, Startups]\n\nFull Context:\nWrite a comprehensive, clear explanation (5–8 sentences) of what this article is about. Go beyond the summary. Add meaningful context like:\n\n    Why this news matters\n\n    What led to it (background)\n\n    Who’s involved\n\n    What’s at stake\n\n    Industry reactions (if available)\n\n    Consequences or implications\n\nOriginal Link: [Insert the URL here]\n\n\nYou may repeat this structure for each article in the input.\n\n---\n\n## Instructions & Behavior\n\n- Do **not** output articles older than 7 days from the current date (provided above).\n- Never use emojis or casual language.\n- Avoid clickbait, fluff, or rhetorical statements.\n- All language must be third-person and editorial in tone.\n- Your output is stored as knowledge, not published directly — so write it with accuracy, depth, and utility in mind.\n- If any information is missing from the RSS input (e.g., summary or tags), do your best to work around it, but never fabricate.\n- Do not write headings like \"Article 1\" — use only the format provided.\n\n---\n\n## Input Structure (From n8n)\n\nEach article you receive includes:\n- Title\n- Summary\n- Source site\n- URL\n- Topics/tags\n- Publish date\n\nUse all available input to craft each article block as described.\n\n---\n\nRemember: You are preparing source intelligence for the weekly editorial AI. Your goal is to make sure nothing critical is missed when the final newsletter is built.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        2560,
+        384
+      ],
+      "id": "92c3dbdc-ed13-480b-8e1b-8215bad158e3",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('message0_Text', `Use this tool to pull further information if really necessary in some cases from the internet.`, 'string') }}"
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexityTool",
+      "typeVersion": 1,
+      "position": [
+        2768,
+        640
+      ],
+      "id": "f92aa55a-c16c-459b-91a2-4c1226efeae8",
+      "name": "Get info from internet"
+    },
+    {
+      "parameters": {
+        "content": "# News Aggregator",
+        "height": 820,
+        "width": 2100,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        160
+      ],
+      "id": "07bbe1f3-6dd1-401b-82d9-42da8c912de8",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# Newsletter Copywriter AI ",
+        "height": 820,
+        "width": 2100,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        1088
+      ],
+      "id": "27920555-11f3-4248-bbfc-75543f5ec0f8",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2432,
+        592
+      ],
+      "id": "e48806a2-908f-4fed-a76e-1762e5f2caef",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2048,
+        1536
+      ],
+      "id": "f4cc9dc0-ff1c-45fd-ba7c-99dcbb240b52",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "create subscription",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "delete subscription",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Read RSS News Feeds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "News reader AI": {
+      "main": [
+        [
+          {
+            "node": "Convert Response to an Email-Friendly Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Articles Daily": {
+      "main": [
+        [
+          {
+            "node": "Set Tech News RSS Feeds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read RSS News Feeds": {
+      "main": [
+        [
+          {
+            "node": "Set and Normalize Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Weekly Summary": {
+      "main": [
+        [
+          {
+            "node": "Your topics of interest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Tech News RSS Feeds": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Your topics of interest": {
+      "main": [
+        [
+          {
+            "node": "News reader AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Response to an Email-Friendly Format": {
+      "main": [
+        [
+          {
+            "node": "add newletler content to google doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set and Normalize Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "News reader AI",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get info from internet": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "News reader AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "cf34b9cb-58b0-481c-ada9-ade09ca6618d",
+  "meta": {
+    "instanceId": "1f9b134c3525ad50a35177621a05ade8c403caae1fa8ec11e75753428fe762ed"
+  },
+  "id": "ClD2SLheOl5BCKzE",
+  "tags": [
+    {
+      "createdAt": "2025-08-12T15:47:32.517Z",
+      "updatedAt": "2025-08-12T15:47:32.517Z",
+      "id": "QARd0UBMu9x9Vrik",
+      "name": "newsletter"
+    }
+  ]
+}

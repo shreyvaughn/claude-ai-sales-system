@@ -1,0 +1,2014 @@
+{
+  "name": "11 Labs + LI DM Outreach Workflow + Guide",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JtviVAcM-ClXXytWwtO8T8GJcihzd2aAXwFPnlYZAG0",
+          "mode": "list",
+          "cachedResultName": "Sample LI Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JtviVAcM-ClXXytWwtO8T8GJcihzd2aAXwFPnlYZAG0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JtviVAcM-ClXXytWwtO8T8GJcihzd2aAXwFPnlYZAG0/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "1st message sent",
+              "lookupValue": "no"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1168,
+        32
+      ],
+      "id": "d2c0b06b-3b1b-4d93-8012-ed95d2a44303",
+      "name": "Google Sheets",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qhnaYk28FIOwASNC",
+          "name": "YOUR_GOOGLE_SHEETS_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1456,
+        32
+      ],
+      "id": "a9e9c362-be5f-44d4-80ac-e3b5eece5ff8",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "=https://{{your supabase project url}}/rest/v1/campaign_leads?creation_date=eq.{{ $json.today_string }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "{{your api key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{your api key}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3eb9c33d-e5c4-42a0-a46a-8d476522c546",
+      "name": "Get Daily Count1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -848,
+        32
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const nowUtc = new Date();\n\n// Get current UTC time components\nconst currentHour = nowUtc.getUTCHours();\nconst currentMinute = nowUtc.getUTCMinutes();\nconst currentSecond = nowUtc.getUTCSeconds();\nconst currentMs = nowUtc.getUTCMilliseconds();\n\n// Total ms since midnight UTC\nconst elapsedToday =\n  ((currentHour * 60 + currentMinute) * 60 + currentSecond) * 1000 + currentMs;\n\n// Total ms in a day\nconst dayMs = 24 * 60 * 60 * 1000;\n\n// Remaining time until next day\nconst waitMs = dayMs - elapsedToday;\nconst waitSeconds = Math.floor(waitMs / 1000);\n\nreturn [\n  {\n    json: {\n      now_utc: nowUtc.toISOString(),\n      seconds_until_next_day: waitSeconds\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        224
+      ],
+      "id": "d192e8c5-6150-4b49-86b4-e6e8ea7192a7",
+      "name": "Code4"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputItems = $input.all();\nconst count = inputItems.length;\n\nreturn [\n  {\n    json: {\n      total_records: count\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        32
+      ],
+      "id": "5ad2b286-ce4a-4ac8-a4da-88c8944992e1",
+      "name": "Code5"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.total_records }}",
+                    "rightValue": 100,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    },
+                    "id": "544b54a2-6ff2-425a-a7a0-0986a0cd5549"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2102824d-817a-4d00-bea0-990ef31ad31c",
+                    "leftValue": "={{ $json.total_records }}",
+                    "rightValue": 100,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gte"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -400,
+        32
+      ],
+      "id": "357edcc9-03e8-4015-a64c-9a85b4d07f1f",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "url": "=https://api8.unipile.com:13814/api/v1/users/{{ $('Google Sheets').item.json.linkedin_profile.split('/').pop() }}?linkedin_sections=*&account_id={{ linkedin user id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "{{your api key}}"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7d461874-d31e-47ef-8cdc-7fbaad747b47",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api8.unipile.com:13814/api/v1/chats",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "{{your api key}}"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "content-type",
+              "value": "multipart/form-data"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "account_id",
+              "value": "={{ $('Set Correct Linkedin ID1').item.json.userId }}"
+            },
+            {
+              "name": "attendees_ids",
+              "value": "={{ $json.provider_id }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Message Variation1').item.json.selected }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "8da6696e-0d7d-4a56-8cf2-c845acfb7afc",
+      "name": "HTTP Request6",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "amount": "={{ $json.seconds_until_next_day }}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        304,
+        224
+      ],
+      "id": "20fabb88-ad40-4eba-8419-d65a9c44f856",
+      "name": "Wait2",
+      "webhookId": "88a192e7-26bd-4784-938e-1d0e394730ad"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1920,
+        640
+      ],
+      "id": "d92563ec-2d72-4aa4-a867-01a177b4d447",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Step 1: Get the raw JSON string from the first input item's 'text' field\nconst raw = $input.first().json.text;\n\n// Step 2: Remove the ```json\\n and ``` wrappers if they exist\nconst cleaned = raw.trim().replace(/^```json\\n/, '').replace(/```$/, '');\n\n// Step 3: Try to parse the cleaned JSON string\nlet parsed;\ntry {\n  parsed = JSON.parse(cleaned);\n} catch (error) {\n  throw new Error('Failed to parse JSON: ' + error.message);\n}\n\n// Step 4: Return the object as a single item, preserving all keys like subject1, body1, etc.\nreturn [\n  {\n    json: parsed\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        672
+      ],
+      "id": "d060881d-aa68-494e-a233-e962bf626a86",
+      "name": "Structure Output"
+    },
+    {
+      "parameters": {
+        "jsCode": "const subject1 = $input.first().json.subject1;\nconst body1 = $input.first().json.body1;\nconst subject2 = $input.first().json.subject2;\nconst body2 = $input.first().json.body2;\nconst subject3 = $input.first().json.subject3;\nconst body3 = $input.first().json.body3;\nconst subject4 = $input.first().json.subject4;\nconst body4 = $input.first().json.body4;\n\nreturn [\n  {\n    json: {\n      formatted_subject1: JSON.stringify(subject1),\n      formatted_body1: JSON.stringify(body1),\n      formatted_subject2: JSON.stringify(subject2),\n      formatted_body2: JSON.stringify(body2),\n      formatted_subject3: JSON.stringify(subject3),\n      formatted_body3: JSON.stringify(body3),\n      formatted_subject4: JSON.stringify(subject4),\n      formatted_body4: JSON.stringify(body4)\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        672
+      ],
+      "id": "e98564ae-f0e3-4d07-aaf3-4ae4bf4389f5",
+      "name": "jsonify"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Generate a personalized cold linkedin sequence using the following details, that sounds ultra human, like a friend chatting with another. You will recieve the email that we have sent to these guys and you will convert those cold emails sequenc into a summarise linkedin sequence that feels ultra friendly though. Follow the email structure, ensure hyper-personalization, and maintain a conversational tone\n\n###Prospect We are Reaching Out to:\n\nName: {{ $('Google Sheets1').item.json.first_name }} {{ $('Google Sheets1').item.json.last_name }}\nCompany Name: {{ $('Google Sheets1').item.json.company_name }}\n\nResearch (Recent Event and Facts):\n\n{{ $('data_parser1').item }}\n\n\n### Cold Email Sequence Generated AND SENT ALREADY for this Prospect\n\nMessage 1:\n{{ $('Google Sheets1').item.json.message_1 }}\n\nMessage 2:\n{{ $('Google Sheets1').item.json.message_2 }}\n\nMessage 3:\n{{ $('Google Sheets1').item.json.message_3 }}\n\n\n###Knowledge Base:\n\nUse this Knowledge Base to get information about our company. This includes what exactly we do, our value proposition, and our offers. Go through it thoroughly to get a deep understanding and use it accordingly to create the final email sequence.\n\nYOUR_COMPANY_NAME is not a software product or a cold outreach agency. It’s an AI-powered infrastructure that **builds and delivers fully personalized sales automation systems** for high-volume, high-context outreach across email, calls, SMS, and LinkedIn.\n\nWe work with growth-focused agencies, sales teams, and service companies that want scalable pipeline without relying on manual SDRs, disjointed tools, or generic automations.\n\nWe don’t “generate leads.” We build **custom outbound sales engines**—with AI that does the job of a rep, an ops manager, and an outreach team, at once.\n\n---\n\n## **What We Deliver**\n\nWe build and deploy **done-for-you AI sales systems**, designed around the client’s sales stack, workflows, and communication channels.\n\n### 🔹 Core Capabilities\n\n1. **AI Call Engine**\n    - Custom-trained AI callers, built on Retell AI\n    - Trained with over 500K emails and real sales call data\n    - Handles qualification, objection-handling, and live call booking\n    - Call recordings and summaries included\n2. **Omnichannel Outreach**\n    - Email, and AI voice, LinkedIn (optional)\n    - Fully personalized sequences using real-time research and scraping\n    - Dynamic follow-up logic with reply detection and routing\n    - Automated appointment booking + routing based on geography, availability, and ICP\n3. **Lead Research & Personalization**\n    - Apify, Google scraping, LinkedIn signal mining, Dedicated Infrastructure for Web crawling\n    - Tech stack + pain-point analysis\n    - Role-based message variation\n    - Zero-template personalization using GPT-based agents\n4. **Slack/WhatsApp/Message Control Panel**\n    - Clients can interact with the system in real-time\n    - Ask:\n        \n        > “How many appointments this week?”\n        > \n        > \n        > “Send a follow-up to John from Stripe”\n        > \n        > “Book a call with Michael, Tuesday 3PM”\n        > \n    - AI assistant books meetings, sends emails, updates CRM, and logs actions\n5. **System Ownership (Depending on Tier)**\n    - Either built on YOUR_COMPANY_NAME’s proprietary internal stack (fastest)\n    - Or custom-built automation stack handed over with full IP ownership\n    - Can be managed by YOUR_COMPANY_NAME or the client’s own team\n6. **Real-Time Notifications & Analytics**\n    - Meeting booked? Slack alert\n    - AI got a positive reply? Text ping\n    - No-show follow-up? Automated resend\n    - Full visibility on booked calls, interest, replies, and drop-offs\n    - Custom dashboard for analytics (optional)\n7. **Optional Custom Platform (For Enterprise)**\n    - Upload lead lists, schedule campaigns, assign ICPs\n    - Slack + dashboard combo to run the system like a SaaS product\n    - Hosted on the client’s domain\n    - Multi-user access for larger sales teams\n\n---\n\n## **What Makes YOUR_COMPANY_NAME Different**\n\n- **No Generic Campaigns**\n    \n    Everything is built from scratch—every client gets their own strategy, lead filters, copy, and automations.\n    \n- **Real AI, Not Gimmicks**\n    \n    We’ve trained AI to speak and write like a human. This is real delegation, not templated automation.\n    \n- **Ownership Options**\n    \n    Clients can own the entire system, run it themselves, or have us operate it with performance-based service.\n    \n- **Extreme Depth in Personalization**\n    \n    Messaging is enriched with contextual data—company size, news mentions, job roles, recent changes, even tone of voice used by the prospect.\n    \n- **Everything is Built Around ROI**\n    \n    Our system replaces SDRs, outreach software, CRMs, analytics tools, and part of the IT function—cutting operational costs and increasing velocity.\n    \n\n---\n\n## **Delivery Workflow**\n\n1. **Onboarding & Strategy Session**\n    - We map out workflows, tech stack, ICPs, and positioning\n2. **AI Training & System Architecture**\n    - Train voice agents, configure n8n automations, personalize outreach sequences\n3. **System Deployment**\n    - Launch email, AI call, SMS, and Slack assistant\n    - Start booking appointments within 7–14 days\n4. **Ongoing Optimization (Optional)**\n    - Weekly audits, campaign refreshes, feedback loop training for AI agents\n    - Strategic support available bi-weekly\n\n---\n\n## **Use Cases**\n\n- B2B agencies looking to scale without more reps\n- SaaS companies wanting predictable demos without ad spend\n- Consulting firms replacing cold outreach teams\n- Appointment setters looking to productize their own AI system\n- Sales teams replacing unscalable lead gen efforts\n\n---\n\n## **Support Channels**\n\n- Slack group access for immediate queries\n- AI assistant for real-time insights\n- Email support and dashboard analytics\n- Optional dedicated account strategist\n\n---\n\n## **Available Delivery Models (Withholding Pricing)**\n\nThere are three main models clients can choose from:\n\n1. **Done-for-You (YOUR_COMPANY_NAME Managed)**\n    - Built using our proprietary internal systems\n    - Operated by our team\n    - Includes tailored outreach, AI calls, email sequences\n    - Clients stay focused on closing\n2. **IP-Owned System (Client-Controlled)**\n    - Custom-built AI system with full IP handover\n    - Hosted on client’s infrastructure or stack\n    - YOUR_COMPANY_NAME optional as an operator\n    - Ideal for teams wanting full control\n3. **Enterprise Custom Platform (Full Stack Delivery)**\n    - SaaS-style application built specifically for the client\n    - Includes frontend dashboard, backend infrastructure, user permissions, and Slack/text command system\n    - Used by enterprise teams, large agencies, or white-labelers\n\n###Instructions:\n\n\n###The final output must be in this format, with /n wherever required, basically create everything and the outptu in this format:\n\n{\n  \"subject1\": \"\",\n  \"body1\": \"\",\n  \"subject2\": \"\",\n  \"body2\": \"\",\n  \"subject3\": \"\",\n  \"body3\": \"\",\n}\n\nEnsure it feels warm, natural, and hand-typed. The dm message should be ready to send instantly. Always maintain enterprise-level quality. Each string field must be double-quoted. Do not include markdown or formatting characters. Do not explain the JSON or add any commentary before or after the block. The output must be only the JSON object.\n\n###YOU MUST OUTPUT THE DMs IN THE REQUIRED FORMAT OR YOU WILL BE IMMEDIEATLY FIRED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1\n",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a world-class cold email copywriter and B2B outbound personalization specialist. Your primary role is to craft deeply personalized and highly persuasive LinkedIn DM sequences designed to convert entirely cold B2B leads into qualified sales meetings. You write with surgical precision and emotional intelligence, balancing brevity, relevance, and strategic curiosity to get replies, not just opens. Your output must consistently outperform generic templates by leveraging nuanced personalization, contextual depth, and modern outbound psychology.\n\n###Objective:\n\nCreate an outbound LinkedIn DM sequence that feels uniquely written for the individual recipient while subtly guiding them toward taking a meeting. Your sequence must reflect a nuanced understanding of the recipient's company, role, and recent activity. You are not writing DMs that feel like marketing. You are writing cold outbound DMs that feel like direct, personal messages from a peer.\n\n###Step-by-Step SOP: Creating a Hyper-Personalized Cold LinkedIn DM\n\nStep 1: Deep Contextual Understanding Before Writing\n\n1.1 Grasp Our Company & Its Core Offer\n\nReview the knowledge base thoroughly.\nUnderstand what makes our offer unique and compelling.\nNote key differentiators and client success stories.\n\n1.2 Analyze the Prospect’s Profile & Research\n\nReview all data points: name, company, title, website insights, LinkedIn info, press/news, blogs, and challenges.\nIdentify what’s happening at their company (growth, hiring, pain points, tech stack changes, partnerships, etc.).\nSpot the emotional levers: success, pride, stress points, ambition, or curiosity triggers.\n\n1.3 Clarify the Strategic Fit\n\nConnect our solution to a specific pain, goal, or trigger event at the company.\nWrite down the 1 most powerful reason this person should care right now.\n\n1.4 Lock in the Reference DM Structure\n\nStudy the proven structure from past successful DMs.\nMaintain the format but never copy wording directly.\nEnsure personalization and value lead the structure.\n\nStep 2: Craft the First Draft DM\n\n2.1 Follow This Perfect Structure\n\nHook Line (First Sentence) – Ultra-relevant and curiosity-driven.\nRelevance Bridge – Show them you understand what they care about.\nValue Statement (in Bold) – Show the result they’ll get.\nMini Explanation – 1-2 sentences max. Why does it work?\nLight CTA – Specific time/day (dynamically calculated).\nWarm Close – Friendly, respectful, no-pressure.\n\n2.2 Keep These Line Rules\n\nMax 12 words per line.\nMax 8 lines total.\nNo paragraph should exceed 2 sentences.\n\n2.3 Personalization Layering\n\nMention a specific achievement, project, event, or product detail.\nInclude a human line showing genuine curiosity or familiarity.\n\n2.4 Human-Like Writing Style\nUse contractions: it’s, you’re, they’ve.\nLowercase stylistically (e.g., \"quick chat\" not \"Quick Chat\").\nStrategic imperfections allowed: e.g., \"inall\" instead of \"info\" (1 per 4 DMs Sequence).\nNo robotic phrases like “I wanted to reach out.”\n\nStep 3: Review & Refine (Final Polish Checklist)\n\n3.1 Personalization Check\nCan a human tell it’s not a mass DM?\nEvery line should reference something the prospect uniquely cares about.\n\n3.2 Clarity + Simplicity Check\nReading level = Grade 5.\nNo sentence over 12 words.\nClear flow starts to finish. Read aloud.\n\n3.3 CTA Sanity Check\nCTA is low-friction (\"Would Friday at 3 PM work?\").\nTime and day are dynamically calculated based on the day of sending.\n\n3.4 Final Formatting Checks\n\nBold only used for key value lines.\nOne line break between each sentence/section.\nNo emojis. No headers. No fluff.\nAll variables replaced. Zero curly brackets.\n\n###Instructions for Creating Follow-Up DMs:\n\nNew Angle for Follow-Up:\n\nProvide a fresh insight, case study, or high-value offer to make the follow-up compelling.\nPreferred Call-to-Action (CTA):\n\nTry a New CTA for this DM, just make sure that it is related to book a call, you can be all kinds of clever with this, but just make sure it is super simple to understand and follow.\n\nTone & Style Preferences: Business Casual. Professional but not FORMAL!\nKeep it short and crisp, but explain the point and offer properly in the most concise way possible!!\n\nStart the DM with a line indicating that it is a follow-up.\n\nKeep the DM short and to the point.\n\nIntroduce a fresh angle or insight related to hardware design challenges.\nReplace the general term “common industry challenges” with specific challenges such as lengthy prototyping cycles and high operational costs.\n\nEnsure the DM includes all key factors of the offer, such as being tailored, no-cost, drawing on proven results, and expertise.\n\nInclude a clear call to action for scheduling a call.\n\nMention a follow-up time to create a sense of urgency.\n\nMaintain a business casual tone while being direct and approachable.\n\nMake sure to keep the DM short as this is just the follow up DM. We do not want them to skip it again, instead we want to make it shorter so the chances of the receiver reading it will increase by a lot.\n\nNEVER USE \"—\" inside the body of the DM or the content, because this hyphen tells the receiver clearly that the DM is made by an AI, not written by a human. I REPEAT NEVER USE IT!!!\n\nALWAYS START THE DM BY GREETING THE RECEIVER IN THE VERY FIRST LINE AND ALWAYS CONCLUDE WITH YOUR NAME, DESIGNATION, AND COMPANY NAME AFTER THE POLITE CONCLUSION!!\n\nGenerate a high-impact follow-up DM designed to re-engage an unresponsive prospect by presenting a compelling new angle that makes the value undeniable.\n\n📬 The DM Should:\n\nImmediately capture attention with a bold hook (a stat, competitor insight, or industry shift).\n\nIntroduce a fresh value proposition that wasn’t mentioned in the first DM (a case study, framework, or unique strategy).\n\nDirectly address a key pain point specific to the prospect’s industry (e.g., lengthy prototyping cycles, high operational costs).\n\nMaintain a concise, punchy, and conversational tone — no corporate fluff, just real, engaging messaging.\n\nFeature a frictionless CTA that makes it effortless to respond and book a call.\nUse urgency strategically with a soft deadline to encourage a timely reply.\nEvery DM must feel tailored, persuasive, and effortless to engage with, while reinforcing the tangible benefits of taking action now.\n\n🧠 Step-by-Step Process:\n\n1️⃣ Review the Initial DM & Prospect’s Likely Objection\n\nIdentify the strongest benefit highlighted in the first DM.\nDetermine why they didn’t respond:\nToo generic? → Make it more personalized.\nNo urgency? → Add a timely reason to act.\nValue wasn’t clear? → Present a new angle with stronger proof.\n\n2️⃣ Make the DM Impossible to Ignore\n\nOpen with a bold hook that sparks curiosity or urgency:\n“Just helped a team in [industry] cut months off their launch — made me think of you.”\n“Not sure if this is on your radar, but your competitors are moving fast on this…”\n\nAvoid generic follow-ups like “just checking in.”\n\n3️⃣ Introduce a New, Personalized Value Angle\n\nOffer something fresh that wasn’t in the first DM:\nA high-value resource (audit, case study, industry insight).\nA direct comparison showing how others in their industry are moving ahead.\nA quantifiable result, tailored to their situation.\n\n4️⃣ Keep It Tight, Conversational & Human\n\nNo corporate fluff.\nUse short, punchy sentences.\nBe hyper-specific:\n“Teams in [industry] waste 3+ months in prototyping delays. We’ve cut this by 30%.”\nAvoid “Companies struggle with inefficiencies.”\nKeep it informal but professional:\n“Think this could be useful?”\nAvoid “Let me know if you’re interested.”\n\n5️⃣ Make the CTA Irresistible & Easy\n\nNo effort required from the prospect:\n“Reply ‘let’s talk’ and I’ll share the details.”\n“How about a quick 7-minute call? Just reply ‘yes’ and I’ll send over my availability.”\nCreate urgency with a soft deadline:\n“If I don’t hear back by [day], I’ll assume this isn’t a priority for now.”\n\n6️⃣ End with a Personal Touch\n\nClose naturally:\n“Eager to hear your thoughts, [Name]!”\n(Optional) “Sent from my iPhone” for authenticity.\n\nNOTE: IN THE FINAL OUTPUT, THE DM MUST NEVER EXCEED 3 LINES OF THE BODY WITH MAXIMUM 13 WORDS EACH LINE!!! IF IT EXCEEDS THE LIMIT, YOU WILL PERMANENTLY LOSE YOUR JOB!!!\n\n###Instructions for Creating Perfect Subject Lines:\n\nYou are an expert in crafting high-converting, unconventional cold LinkedIn DM subject lines that maximize open rates (30-40%+). Your focus is on creating short (under four words), lowercase, and curiosity-driven subject lines that stand out in a crowded inbox.\n\n###Guidelines:\n\nLength: Keep subject lines under four words to ensure maximum readability.\nFormat: Use all lowercase letters (no capitalization).\nPersonalization: Every subject line must include {{ $('Google Sheets1').item.json.first_name }} for dynamic engagement.\nTone: Make it playful, unconventional, and unexpected while maintaining professionalism.\nCuriosity Hook: Subject lines should feel intriguing, incomplete, or slightly provocative to drive the recipient to open the DM.\nNo Clickbait: Ensure authenticity—subject lines should be attention-grabbing yet aligned with the DM content.\nNo Emojis: Avoid emojis or special characters—focus on wordplay and psychological triggers.\nCold DM Optimization: Tailor subject lines specifically for cold outreach, avoiding spam triggers while still being engaging.\n\nEnsure it feels warm, natural, and hand-typed. The DM should be ready to send instantly. Always maintain enterprise-level quality. Each string field must be double-quoted. Do not include markdown or formatting characters. Do not explain the JSON or add any commentary before or after the block. The output must be only the JSON object.\n\nSTYLE GUIDELINES:\n\nTone:\n\nConversational, peer-to-peer, and human.\nRespectful and curious — not aggressive or salesy.\nTone should feel like it’s written by a smart operator who understands growth, technology, and market dynamics.\n\nStructure:\n\nUse sentence fragments and short lines to create flow and scanning ease.\nAlways leave line breaks between every 1–2 sentences for readability.\nThe reader should never feel overwhelmed by a wall of text.\n\nLength:\n\nInitial DM: 45 to 90 words.\nFollow-up 1: 25 to 60 words.\nFollow-up 2: 20 to 50 words.\nFollow-up 3: 15 to 45 words.\n\nSubject Lines:\n\nShort, lowercase, and intrigue-driven.\nAvoid excessive punctuation.\nAvoid spam trigger phrases.\nNever use title case or clickbait language.\n\nCTA Strategy: Use low-friction call-to-actions that make replying easy and natural:\n\n\"Worth a quick look?\"\n\"Curious if this is even on your radar.\"\n\"Should I send more info?\"\n\"Open to explore?\"\n\"Is this even remotely relevant right now?\"\nAvoid pushy or assumptive CTAs like:\n\"Let’s jump on a call\"\n\"Can you do 15 minutes tomorrow?\"\n\"Schedule here\"\n\nJust end with\n\nPERSONALIZATION STRATEGY (MANDATORY): You must base your personalization and context directly on the following data from the input:\n\n    Prospect Research\n\nAlways reference a recent milestone, announcement, or shift at the company.\nUse this to guide relevance — this is your emotional and logical hook.\n\n    Job Title\n    Speak to their priorities based on what someone in their role would care about.\n    Don’t explain their job to them — assume intelligence.\n\n    Industry\n\nInflect tone and jargon based on industry sophistication.\nShow understanding of market context where relevant.\n\n    Company Name + ICP Matching\n\nUse the fact that their company fits the ICP as a subtle justification for outreach.\n\nHint at why their stage/size/market makes them a good fit without saying \"You’re a perfect fit.\"\n\n    Core Offer Matching\n\nPosition the offer as something that could solve or amplify a current strategic priority.\n\nDo NOT list features — express the end-state and result they might want.\n\nFOLLOW-UP STRATEGY (ADVANCED): Each follow-up must:\n\nReference the previous message indirectly (no \"just following up\").\nIntroduce a different angle of value (e.g. outcome, time savings, credibility).\nStay emotionally neutral — avoid guilt-tripping, sarcasm, or pressure.\nMaintain curiosity and novelty at every touchpoint.\nAdvanced Techniques:\nInclude a short personalized reference or callback in each follow-up.\nAdd a subtle insight or social proof element (without links).\nAlways end on a light, curiosity-driven CTA.\n\nTHINGS TO NEVER DO:\nNever use generic opening lines like \"Hope this finds you well.\"\nNever include links, images, or attachments.\nNever write more than 3 sentences per paragraph.\nNever use uppercase subject lines or exclamation marks.\nNever send an DM that could apply to more than 5 people.\nNever pitch directly — always frame as relevant insight or exploration.\n\nFINAL OUTPUT INSTRUCTIONS:\n\nOnly return the cold DM sequence in the requested JSON structure.\nDo not include any commentary, explanation, or Markdown formatting.\nOutput must be immediately usable as part of an automated outbound system.\nAssume the reader will only see the DM body and subject — so both must be powerful and standalone.\n\nMOST IMPORTANT NOTE: YOU MUST CREATE THAT WOW FACTOR BY PERSONALISING TO THE CORE AND USING THE RESEARCH WE HAVE DONE ON THEM INCREDIVLE WELL, THAT MAKE IT IMPOSSIBLE FOR THEM TO NOT REPLY."
+            },
+            {
+              "message": "=###In your final output, you must NEVER USE THESE WORDS WRITTEN IN INVERTED COMMAS IN THE WORDS GIVEN DOWN BELOW.\n\nHERE'S THE WORDS WHICH YOU HAVE TO COMPLETELY VOID IN YOUR FINAL OUTPUT:\n\n1. Urgency & Pressure\n\"Act now\", \"Apply now\", \"Become a member\", \"Call now\", \"Click below\", \"Click here\", \"Don't delete\", \"Do it today\", \"Expires\", \"Final call\", \"For instant access\", \"Get it now\", \"Get started now\", \"Hurry up\", \"Instant\", \"Limited time\", \"New customers only\", \"Now\", \"Offer expires\", \"Once in a lifetime\", \"Order now\", \"Please read\", \"Special promotion\", \"Take action now\", \"Time sensitive\", \"Today only\", \"Urgent\", \"While supplies last\"\n\n2. Shady, Unethical, or Legally Questionable\n\"Accept credit cards\", \"As seen on\", \"Avoid bankruptcy\", \"Cards accepted\", \"Casino\", \"Certified\", \"Congratulations\", \"Consolidate debt\", \"Copy DVDs\", \"Explode your sales\", \"Hidden charges\", \"Human growth hormone\", \"In accordance with laws\", \"Loans\", \"Lose weight\", \"Medicine\", \"Meet singles\", \"Multi-level marketing\", \"No experience\", \"Not spam\", \"Online gambling\", \"Passwords\", \"Porn\", \"Pre-approved\", \"Quote\", \"Refinance\", \"Removes wrinkles\", \"Reverses aging\", \"Sex\", \"Stop snoring\", \"Undisclosed recipient\", \"Viagra\", \"Vicodin\", \"We hate spam\", \"Weight loss\", \"Work from home\", \"XXX\"\n\n3. Over-Promising & Exaggeration\n\"#1\", \"100% free\", \"100% satisfied\", \"All natural\", \"Amazing\", \"Amazing stuff\", \"Best price\", \"Big bucks\", \"Billion dollars\", \"Cash bonus\", \"Cures baldness\", \"Drastically reduced\", \"Easy terms\", \"Fantastic deal\", \"Fast cash\", \"Financial freedom\", \"Free access\", \"Free gift\", \"Free info\", \"Free investment\", \"Free membership\", \"Free offer\", \"Free preview\", \"Free trial\", \"Full refund\", \"Get paid\", \"Great offer\", \"Guaranteed\", \"Increase sales\", \"Increase traffic\", \"Incredible deal\", \"Lowest price\", \"Make money\", \"Massive amounts\", \"Million dollars\", \"Miracle\", \"Money back\", \"No catch\", \"No cost\", \"No fees\", \"No hidden costs\", \"No obligation\", \"No questions asked\", \"Opportunity\", \"Potential earnings\", \"Prize\", \"Promise you\", \"Pure profit\", \"Risk-free\", \"Satisfaction guaranteed\", \"Save big money\", \"Save up to\", \"The best rates\", \"Unlimited\", \"Unsecured debt/credit\", \"Winner\", \"Winning\", \"You are a winner\", \"You have been selected\"\n\n4. Financial & Money Related\n\"$$$\", \"Affordable\", \"Bargain\", \"Beneficiary\", \"Billing\", \"Bonus\", \"Cash\", \"Cheap\", \"Check or money order\", \"Claims\", \"Clearance\", \"Collect\", \"Compare rates\", \"Cost\", \"Credit\", \"Credit bureaus\", \"Discount\", \"Dollars\", \"Earn $\", \"Earn extra cash\", \"Earn per week\", \"Easy terms\", \"F r e e\", \"Finance\", \"Financial\", \"For just $\", \"Income\", \"Investment\", \"Invoice\", \"Lowest price\", \"Money\", \"Mortgage\", \"No investment required\", \"Payment\", \"Pennies a day\", \"Price\", \"Profits\", \"Pure profit\", \"Quote\", \"Rates\", \"Refinance\", \"Save $\", \"Serious cash\", \"Subject to credit\", \"Thousands\", \"US dollars\", \"Why pay more?\"\n\n5. Needy, Desperate, or Overly Aggressive Sales\n\"Access\", \"Apply online\", \"Buy\", \"Buy direct\", \"Call free\", \"Cancel at any time\", \"Card accepted\", \"Deal\", \"Direct email\", \"Direct marketing\", \"Form\", \"Giveaway\", \"Increase your sales\", \"Marketing\", \"Member\", \"Name brand\", \"Offer\", \"Online marketing\", \"Order status\", \"Orders shipped\", \"Purchase\", \"Requires initial investment\", \"Sale\", \"Sales\", \"Search engine listings\", \"Sign up free\", \"Subscribe\", \"Visit our website\", \"Web traffic\", \"Will not believe your eyes\"\n\n6. Generic & Impersonal Opening/Closing\n\"Dear friend\", \"Dear [email address]\", \"Dear [First Name]\", \"Hello\", \"Hi there\", \"Greetings\", \"Information you requested\", \"Introductory offer\", \"To respectable customer\"\n\n\n## Also note that you MUST NEVER USE THESE TACTICS WHILE CREATING THE FINAL OUTPUT:\n\nFormatting & Technical Triggers:\n* Using ALL CAPS excessively\n* Excessive exclamation points (!!!)\n* Using spam trigger words in the Subject Line\n* Misleading subject lines (e.g., Re:, Fwd: when it's not a reply or forward)\n"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        800,
+        672
+      ],
+      "id": "e8a1d377-b855-425d-87f7-2b6ce7f63035",
+      "name": "Linkedin Sequence generation"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.elevenlabs.io/v1/text-to-speech/EXAVITQu4vr4xnSDxMaL/stream",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "xi-api-key",
+              "value": "{{your api key}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"text\": \"Hello there, this is a test generated by Eleven Labs.\",\n  \"model_id\": \"eleven_monolingual_v1\",\n  \"voice_settings\": {\n    \"stability\": 0.5,\n    \"similarity_boost\": 0.75\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "test.mp3"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1584,
+        672
+      ],
+      "id": "287fbc14-5442-449d-ad83-0537fcb06b0f",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{your supabase project url}}/storage/v1/object/li-voicenotes/voicenote for {{ $('Google Sheets1').item.json.first_name }} {{ $('Google Sheets1').item.json.last_name }} from {{ $('Google Sheets1').item.json.company_name }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "{{your api key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{your api key}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1808,
+        672
+      ],
+      "id": "6447dd7d-886d-4638-80cc-1f0f07f02959",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2032,
+        672
+      ],
+      "id": "20228b9c-56d4-4c57-be39-6cb67862ece2",
+      "name": "Google Sheets2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qhnaYk28FIOwASNC",
+          "name": "YOUR_GOOGLE_SHEETS_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1JtviVAcM-ClXXytWwtO8T8GJcihzd2aAXwFPnlYZAG0",
+          "mode": "list",
+          "cachedResultName": "Sample LI Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JtviVAcM-ClXXytWwtO8T8GJcihzd2aAXwFPnlYZAG0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JtviVAcM-ClXXytWwtO8T8GJcihzd2aAXwFPnlYZAG0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "1st message sent": "yes",
+            "first_name": "=",
+            "row_number": "={{ $('Google Sheets').item.json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_name",
+              "displayName": "last_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_profile",
+              "displayName": "linkedin_profile",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message_1",
+              "displayName": "message_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message_2",
+              "displayName": "message_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message_3",
+              "displayName": "message_3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recording_url",
+              "displayName": "recording_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "1st message sent",
+              "displayName": "1st message sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "2nd message sent",
+              "displayName": "2nd message sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "3rd message sent",
+              "displayName": "3rd message sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "replied",
+              "displayName": "replied",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        448,
+        0
+      ],
+      "id": "777740fc-22d6-4235-9a35-fc6228d69fbe",
+      "name": "Google Sheets3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qhnaYk28FIOwASNC",
+          "name": "YOUR_GOOGLE_SHEETS_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "research",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "d9100504-dded-4007-9112-0644ab1d9f33",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1504,
+        1184
+      ],
+      "webhookId": "9f495fd6-1d51-4a70-8fe1-9121e677eec5"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"research\": {{ $json.Research }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        848,
+        1184
+      ],
+      "id": "a69be8a7-90f1-4305-ba9f-e2f1e0c27d3a",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one// Input text (replace this with your actual input variable)\nconst rawText = $input.first().json.text;\n\n// Safely stringify the text for JSON transport\nconst safeString = JSON.stringify(rawText);\n\n// Return as a field on the item\nreturn [\n  {\n    json: {\n      Research: safeString\n    }\n  }\n];\n\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        1184
+      ],
+      "id": "5521a42c-ea2e-4773-ad04-f05e38f891a5",
+      "name": "JSONIFY"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const post = item.json;\n  return {\n    json: {\n      post: {\n        text: post.text,\n        image: post.images && post.images.length > 0 ? post.images[0] : null,\n        url: post.url,\n        postedAt: post.postedAtISO,\n        timeSincePosted: post.timeSincePosted,\n        numLikes: post.numLikes,\n        numComments: post.numComments,\n        numShares: post.numShares,\n        author: {\n          name: post.authorName,\n          headline: post.authorHeadline,\n          profileUrl: post.authorProfileUrl,\n          profilePicture: post.authorProfilePicture,\n        }\n      },\n      comments: (post.comments || []).map(comment => ({\n        text: comment.text,\n        time: comment.time ? new Date(comment.time).toISOString() : null,\n        link: comment.link,\n        author: {\n          name: `${comment.author.firstName} ${comment.author.lastName}`,\n          occupation: comment.author.occupation,\n          profileUrl: comment.author.publicId ? `https://www.linkedin.com/in/${comment.author.publicId}` : null,\n          profilePicture: comment.author.picture,\n        }\n      })),\n      reactions: (post.reactions || []).map(reaction => ({\n        type: reaction.type,\n        reactor: {\n          name: `${reaction.profile.firstName} ${reaction.profile.lastName}`,\n          occupation: reaction.profile.occupation,\n          profileUrl: reaction.profile.publicId ? `https://www.linkedin.com/in/${reaction.profile.publicId}` : null,\n          profilePicture: reaction.profile.picture,\n        }\n      }))\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        64,
+        1184
+      ],
+      "id": "8bc6f6c3-8311-4efa-80f8-24dec7d23438",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "url": "https://api.apify.com/v2/acts/supreme_coder~linkedin-post/run-sync-get-dataset-items?token={{your api key}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"deepScrape\": true,\n    \"limitPerSource\": 1,\n    \"rawData\": true,\n    \"urls\": [\n        \"{{ $('Webhook').item.json.body.linkedin_profile }}\"\n    ]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -144,
+        1184
+      ],
+      "id": "9bba15e9-c448-48be-a5c5-460a701aab2f",
+      "name": "linkedin post info",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fbb67d48-8229-4d2a-9ca6-a3fb85de5f6a",
+              "name": "company_name",
+              "value": "={{ $json.body.company_name }}",
+              "type": "string"
+            },
+            {
+              "id": "91212fbd-6596-4cbb-b01e-c90e3d80d6e2",
+              "name": "linkedin_profile",
+              "value": "={{ $json.body.linkedin_profile }}",
+              "type": "string"
+            },
+            {
+              "id": "c37256a7-a70d-4018-9f92-fed4cde2137a",
+              "name": "website",
+              "value": "={{ $json.body.website }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1280,
+        1184
+      ],
+      "id": "215597db-662c-405a-9f4e-8ed82ccad52a",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Example input (replace with your actual input variable key)\nconst inputWebsite = $input.first().json.website;  // e.g., \"https://chatgpt.com\"\n\nfunction removeProtocol(url) {\n  return url.trim().replace(/^https?:\\/\\//i, '');\n}\n\n// Return cleaned result\nreturn [\n  {\n    json: {\n      original: inputWebsite,\n      withoutProtocol: removeProtocol(inputWebsite),\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1040,
+        1184
+      ],
+      "id": "d5ea2341-c085-4a10-b51d-d4c065617276",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "content": "## Message Sender"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1856,
+        32
+      ],
+      "id": "f7999c70-4648-4469-b1d4-f3a76eb53707",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Message Creator"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2304,
+        624
+      ],
+      "id": "9026c9fa-4b3f-4f83-8dde-17c464bf6172",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Researcher"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1856,
+        1168
+      ],
+      "id": "b3d2365c-42d9-46f7-9292-6b020502160a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/apify~google-search-scraper/runs?token={{your api key}}",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "={\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"queries\": \"{{ $json.withoutProtocol }}\",\n  \"resultsPerPage\": 50,\n  \"numPages\": 1,\n  \"countryCode\": \"us\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -816,
+        1184
+      ],
+      "id": "9c50ffa9-0700-436c-a397-042a8551e4fc",
+      "name": "Apify API Request to scrape data"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.apify.com/v2/actor-runs/{{ $json.data.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -608,
+        1184
+      ],
+      "id": "3bd1ccfb-8891-478d-bd44-8861f69e555d",
+      "name": "Apify get scraped data"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.apify.com/v2/datasets/{{ $json.data.defaultDatasetId }}/items?format=json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -384,
+        1184
+      ],
+      "id": "77453c0e-c7c1-4de3-8509-5ea19cedf377",
+      "name": "apify get full data from database id",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze all of this info about the company and give me a fully refined sheer perfect analysis properly formatted in layman language about this company:\n\n{{ JSON.stringify($json.organicResults, null, 2) }}\n\nAs well this is the lat post of there on their linekdin profile so take this in consideration, when giving the complete Info Doc\n\n{{ $json.post.text }}\n\n# IN THE FINAL OUTPUT JUST GIVE THE INFORMATION ABOUT THE COMPANY DO NOT GIVE ANY LINES LIKE, HERE'S THE FINAL INFORMATION / HERE'S THE FINAL BREAKDOWN OF THE COMPANY, Okay, here's a breakdown of OpenAI and ChatGPT based on the provided information, presented in a clear and accessible way, ETC. TELLING ME HERE'S WHAT I WANTED !!\n\nJUST IN THE FINAL OUTPUT GIVE ME THE INFO ABOUT THE COMPANY NOTHING ELSE !\nTHE INFO MUST BE HEAVILY AND HIGHLY DETAILED !",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        272,
+        1184
+      ],
+      "id": "8626daca-6ffd-4aef-8cd9-2d543edd5c71",
+      "name": "get all company info properly"
+    },
+    {
+      "parameters": {
+        "content": "## Lead gen and data import"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1856,
+        1568
+      ],
+      "id": "1b08d2d1-e9ae-4ac4-b7c4-14a4f60b994a",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json['Who do you want to reach out to ?'] }}\n\n\n# THIS IS A QUERY GIVEN BY OUR CLIENT WHICH YOU HAVE TO PROCESS!\n\nIN YOUR FINAL OUTPUT YOU MUST GIVE ALL OF THE FILTERS IN THE QUERY ABOVE AS RESPONSES IN A JSON FORMAT AS KEYS IN SUCH A WAY THAT WHEN PROCESSES, THEY ARE TAKEN AS DIFFERENT ITEMS FOR EACH KEY AND YOU HAVE TO FILL IN THEIR ALL VALUES FROM THE DATA ABOVE.\n\nHERE'S THE EXPECTED BEST SUCCESSFULL FORMAT FOR YOUR FINAL OUTPUT:\n\n{\n  \"person_titles\": [\n    \"sales development representative\",\n    \"marketing manager\",\n    \"research analyst\"\n  ],\n  \"include_similar_titles\": false,\n  \"q_keywords\": [\n    \"query\",\n    \"keyords\",\n    \"string\"\n  ],\n  \"person_locations\": [\n    \"california\",\n    \"ireland\",\n    \"chicago\"\n  ],\n  \"person_seniorities\": [\n    \"owner\",\n    \"founder\",\n    \"partner\",\n    \"vp\",\n    \"head\",\n    \"director\"\n  ],\n  \"organization_locations\": [\n    \"texas\",\n    \"tokyo\",\n    \"spain\"\n  ],\n  \"q_organization_domains_list\": [\n    \"apollo.io\",\n    \"microsoft.com\"\n  ],\n  \"contact_email_status\": [\n    \"verified\",\n    \"unverified\",\n    \"likely to engage\",\n    \"unavailable\"\n  ],\n  \"organization_ids\": [],\n  \"organization_num_employees_ranges\": [\n    \"1,10\",\n    \"250,500\",\n    \"10000,20000\"\n  ],\n  \"revenue_range\": {\n    \"min\": 90,\n    \"max\": 80\n  },\n  \"currently_using_all_of_technology_uids\": [\n    \"salesforce\",\n    \"google_analytics\",\n    \"wordpress_org\"\n  ],\n  \"currently_using_any_of_technology_uids\": [\n    \"salesforce\",\n    \"google_analytics\",\n    \"wordpress_org\"\n  ],\n  \"currently_not_using_any_of_technology_uids\": [\n    \"salesforce\",\n    \"google_analytics\",\n    \"wordpress_org\"\n  ],\n  \"q_organization_job_titles\": [\n    \"sales manager\",\n    \"research analyst\"\n  ],\n  \"organization_job_locations\": [\n    \"atlanta\",\n    \"japan\"\n  ],\n  \"organization_num_jobs_range\": {\n    \"min\": 6,\n    \"max\": 20\n  },\n  \"page\": 1,\n  \"per_page\": 100\n}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -1264,
+        1568
+      ],
+      "id": "50b3009c-5307-44ff-a2e6-7410cef687a3",
+      "name": "process data for apollo and output its json"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cache-Control",
+              "value": "no-cache"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "x-api-key",
+              "value": "{{your api key}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -624,
+        1568
+      ],
+      "id": "70086ff6-ff11-420a-92e9-f1618cd6c469",
+      "name": "apollo api request - fetch 100 leads"
+    },
+    {
+      "parameters": {
+        "formTitle": "Apollo n8n form",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Who do you want to reach out to ?",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -1520,
+        1568
+      ],
+      "id": "915d5b0d-444b-4cc1-831e-72d6c98e25ad",
+      "name": "On form submission",
+      "webhookId": "9d0d12a4-bb80-4082-bf96-ee661afae2f4"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawText = items[0].json.text;\n\n// Extract JSON string from markdown code block\nconst jsonString = rawText.match(/```json\\s*([\\s\\S]*?)\\s*```/)?.[1];\n\nif (!jsonString) {\n  throw new Error(\"No valid JSON found in input text.\");\n}\n\n// Parse the extracted JSON\nconst data = JSON.parse(jsonString);\n\n// Utility function to encode arrays\nconst encodeArray = (arr) => encodeURIComponent(arr.join('; '));\nconst encodeArrayRaw = (arr) => arr.length > 0 ? `[]=${encodeArray(arr)}` : '[]=';\n\n// Start building the URL\nlet baseUrl = \"https://api.apollo.io/api/v1/mixed_people/search?\";\n\nconst queryParams = [\n  `person_titles${encodeArrayRaw(data.person_titles || [])}`,\n  `include_similar_titles=${data.include_similar_titles}`,\n  `q_keywords${encodeArrayRaw(data.q_keywords || [])}`,\n  `person_locations${encodeArrayRaw(data.person_locations || [])}`,\n  `person_seniorities${encodeArrayRaw(data.person_seniorities || [])}`,\n  `organization_locations${encodeArrayRaw(data.organization_locations || [])}`,\n  `q_organization_domains_list${encodeArrayRaw(data.q_organization_domains_list || [])}`,\n  `contact_email_status${encodeArrayRaw(data.contact_email_status || [])}`,\n  `organization_ids[]=${(data.organization_ids || []).join(',')}`,\n  `organization_num_employees_ranges${encodeArrayRaw(data.organization_num_employees_ranges || [])}`,\n  `revenue_range[min]=${data.revenue_range?.min ?? ''}`,\n  `revenue_range[max]=${data.revenue_range?.max ?? ''}`,\n  `currently_using_all_of_technology_uids${encodeArrayRaw(data.currently_using_all_of_technology_uids || [])}`,\n  `currently_using_any_of_technology_uids${encodeArrayRaw(data.currently_using_any_of_technology_uids || [])}`,\n  `currently_not_using_any_of_technology_uids${encodeArrayRaw(data.currently_not_using_any_of_technology_uids || [])}`,\n  `q_organization_job_titles${encodeArrayRaw(data.q_organization_job_titles || [])}`,\n  `organization_job_locations${encodeArrayRaw(data.organization_job_locations || [])}`,\n  `organization_num_jobs_range[min]=${data.organization_num_jobs_range?.min ?? ''}`,\n  `organization_num_jobs_range[max]=${data.organization_num_jobs_range?.max ?? ''}`,\n  `page=${data.page ?? 1}`,\n  `per_page=${data.per_page ?? 100}`,\n  `organization_industries${encodeArrayRaw(data.organization_industries || [])}`,\n  `person_job_functions${encodeArrayRaw(data.person_job_functions || [])}`\n];\n\n// Final URL\nconst finalUrl = baseUrl + queryParams.join('&');\n\nreturn [\n  {\n    json: {\n      url: finalUrl\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        1568
+      ],
+      "id": "c64fde03-e4f1-4010-a436-3fb010ad4137",
+      "name": "output the perfect URL"
+    },
+    {
+      "parameters": {
+        "content": "## Api key must be on upgraded plan to work properly",
+        "height": 280
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        1440
+      ],
+      "id": "6ffaf8ee-7b4d-461c-9345-411295afb47d",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JtviVAcM-ClXXytWwtO8T8GJcihzd2aAXwFPnlYZAG0",
+          "mode": "list",
+          "cachedResultName": "Sample LI Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JtviVAcM-ClXXytWwtO8T8GJcihzd2aAXwFPnlYZAG0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JtviVAcM-ClXXytWwtO8T8GJcihzd2aAXwFPnlYZAG0/edit#gid=0"
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1616,
+        640
+      ],
+      "id": "4cfc810f-3ea2-4747-94fd-2aa04e0eb340",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qhnaYk28FIOwASNC",
+          "name": "YOUR_GOOGLE_SHEETS_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/apify~website-content-crawler/run-sync-get-dataset-items",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "token",
+              "value": "={{your api key}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"aggressivePrune\": false,\n    \"clickElementsCssSelector\": \"[aria-expanded=\\\"false\\\"]\",\n    \"clientSideMinChangePercentage\": 15,\n    \"crawlerType\": \"playwright:adaptive\",\n    \"debugLog\": false,\n    \"debugMode\": false,\n    \"expandIframes\": true,\n    \"ignoreCanonicalUrl\": false,\n    \"keepUrlFragments\": false,\n    \"proxyConfiguration\": {\n        \"useApifyProxy\": true\n    },\n    \"readableTextCharThreshold\": 100,\n    \"removeCookieWarnings\": true,\n    \"removeElementsCssSelector\": \"nav, footer, script, style, noscript, svg, img[src^='data:'],\\n[role=\\\"alert\\\"],\\n[role=\\\"banner\\\"],\\n[role=\\\"dialog\\\"],\\n[role=\\\"alertdialog\\\"],\\n[role=\\\"region\\\"][aria-label*=\\\"skip\\\" i],\\n[aria-modal=\\\"true\\\"]\",\n    \"renderingTypeDetectionPercentage\": 10,\n    \"respectRobotsTxtFile\": true,\n    \"saveFiles\": false,\n    \"saveHtml\": false,\n    \"saveHtmlAsFile\": false,\n    \"saveMarkdown\": true,\n    \"saveScreenshots\": false,\n    \"startUrls\": [\n        {\n            \"url\": \"{{ $('Google Sheets1').item.json.company_website }}\",\n            \"method\": \"GET\"\n        }\n    ],\n    \"useSitemaps\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1248,
+        784
+      ],
+      "id": "4b23bdc8-781c-4ed6-b11b-6d850bec9d79",
+      "name": "web research"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/dev_fusion~linkedin-profile-scraper/run-sync-get-dataset-items",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "token",
+              "value": "={{your api key}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"profileUrls\": [ \"{{ $json.linkedin_profile }}\"\n    ]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1216,
+        544
+      ],
+      "id": "e7ef1710-d8eb-44c1-96d7-96be9d7780c9",
+      "name": "linkedin research"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('web research').item.output }}",
+        "options": {
+          "systemMessage": "=You are a Website Intelligence Agent.\nYour sole responsibility is to analyze the raw website data (HTML, text, or structured content) and extract all useful, factual information about the business that can be used for personalized email and call outreach.\n\nYour output must be structured, clear, and focused only on relevant insights — no tone analysis, no messaging breakdowns, and no creative writing.\n\nFormat your response using the following 3 sections:\n1. Company Overview:\n\n    Business name\n\n    What the company does (in one line)\n\n    Industry and niche (if possible)\n\n    Target customers (e.g. B2B SaaS, DTC brands, enterprise, local business, etc.)\n\n    Headquarters or location (if available)\n\n2. Product or Services:\n\n    Description of products or services\n\n    Core features or offerings\n\n    Unique selling points or value propositions\n\n    Any mention of pricing, free trial, or how users engage\n\n    Integrations or technologies mentioned\n\n3. Notable Highlights (if present):\n\n    Partnerships, clients, case studies, press mentions\n\n    Testimonials or social proof\n\n    Awards, funding, or milestones\n\nDo not interpret or assume. Only extract what's present in the content. Be as concise and factual as possible."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -1024,
+        784
+      ],
+      "id": "1bb7626c-d370-47e3-92ca-fe360fc66382",
+      "name": "extract web info1"
+    },
+    {
+      "parameters": {
+        "url": "https://api.apify.com/v2/acts/supreme_coder~linkedin-post/run-sync-get-dataset-items?token=",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"deepScrape\": true,\n    \"limitPerSource\": 1,\n    \"rawData\": true,\n    \"urls\": [\n        \"{{ $('Google Sheets1').item.json.linkedin_profile }}\"\n    ]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -976,
+        544
+      ],
+      "id": "c87e449b-28ae-4a7f-96be-43b57ff06882",
+      "name": "linkedin post info2",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -544,
+        672
+      ],
+      "id": "0d1868a2-bb4c-45c1-add9-c492434f94af",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const enrichmentResults = $input.first().json;\nconst matches = enrichmentResults.matches || [];\n\nconst enrichedPeople = matches.map(match => {\n  const person = match.person || {};\n  return {\n    id: person.id,\n    name: `${person.first_name || ''} ${person.last_name || ''}`.trim(),\n    title: person.title,\n    email: person.email,\n    personal_emails: person.personal_emails || [],\n    phone_numbers: person.phone_numbers || [],\n    linkedin_url: person.linkedin_url,\n    company: person.organization ? {\n      name: person.organization.name,\n      domain: person.organization.primary_domain,\n      industry: person.organization.industry,\n      employees: person.organization.estimated_num_employees\n    } : null,\n    location: person.city && person.state ? `${person.city}, ${person.state}` : (person.city || person.state || ''),\n    enrichment_status: match.enrichment_status\n  };\n});\n\nreturn enrichedPeople.map(person => ({ json: person }));"
+      },
+      "id": "dc86b852-fee4-40fa-b18b-f250fcd16969",
+      "name": "Structure Apollo Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -336,
+        1568
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "=1JtviVAcM-ClXXytWwtO8T8GJcihzd2aAXwFPnlYZAG0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JtviVAcM-ClXXytWwtO8T8GJcihzd2aAXwFPnlYZAG0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_name",
+              "displayName": "last_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_profile",
+              "displayName": "linkedin_profile",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message_1",
+              "displayName": "message_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message_2",
+              "displayName": "message_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message_3",
+              "displayName": "message_3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recording_url",
+              "displayName": "recording_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "1st message sent",
+              "displayName": "1st message sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "2nd message sent",
+              "displayName": "2nd message sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "3rd message sent",
+              "displayName": "3rd message sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "replied",
+              "displayName": "replied",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -48,
+        1568
+      ],
+      "id": "cfe3b734-25cd-44f2-a7ef-bf1d33bdd7de",
+      "name": "Google Sheets4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "qhnaYk28FIOwASNC",
+          "name": "YOUR_GOOGLE_SHEETS_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "= Task\nTransform raw company data into a clean, structured company profile in **human-readable plain text format** for enhanced readability and professional presentation.\n Required Output Format\n\nThe output should be formatted as a comprehensive plain text document with clear sections and proper formatting:\n\n COMPANY OVERVIEW\nCompany Name: [Extract from name field]\nTagline: [Extract from tagline field]\nIndustry: [Extract from industries array]\nCompany Type: [Extract from companyType field]\nFounded: [Extract from foundedOn.year field]\nEmployee Count: [Extract from employeeCount and employeeCountRange]\nHeadquarters: [Extract from locations array - headquarter location]\nWebsite: [Extract from website field]\nLinkedIn Profile: [Extract from linkedinUrl field]\n\n CONTACT INFORMATION\nPrimary Email: [Extract from emails array]\nPhone Numbers: [Extract from phones array, note if uncertain]\nPhysical Address: [Extract complete address from locations - format as multi-line address]\n\nDIGITAL PRESENCE\nLinkedIn: [Extract from linkedIns array] (Status: Active/Inactive)\nTwitter: [Extract from twitters array] (Status: Active/Inactive)\nInstagram: [Extract from instagrams array] (Status: Active/Inactive)\nFacebook: [Extract from facebooks array] (Status: Active/Inactive)\nYouTube: [Extract from youtubes array] (Status: Active/Inactive)\nOther Platforms: [List any other social media platforms found]\n\n RECENT ACTIVITY & ENGAGEMENT\nLatest LinkedIn Post:\n  Date: [Extract from postedAtISO, convert to readable format]\n  Engagement Metrics:\n    - Likes: [Extract likes]\n    - Comments: [Extract comments]\n    - Shares: [Extract shares]\n    - Impressions: [Extract impressions]\n  Content Summary: [Summarize the post text in 1-2 sentences]\n  Post Type: [Extract from type field]\n  Post URL: [Extract post URL]\n\nSocial Media Metrics:\n  LinkedIn Followers: [Extract from followerCount]\n  Average Engagement Rate: [Calculate: (likes + comments + shares) / followers * 100]%\n  Content Reach: [Extract impression data if available]\n\n COMPANY DETAILS\nDescription: [Extract from description field - format as readable paragraph]\n\nSpecialties: [Extract from specialities array and format as list]\n- [Specialty 1]\n- [Specialty 2]\n- [Specialty 3]\n\n LOCATIONS\nHeadquarters: [Primary location with full address]\n\nAdditional Offices:\n- [Location 2: Address]\n- [Location 3: Address]\n\n ADDITIONAL INSIGHTS\nTechnology Stack: [If mentioned in posts or descriptions, extract and list]\n\nRecent Developments:\n- [Key developments from recent posts]\n- [Notable company updates]\n- [Partnership announcements]\n\nKey Personnel Interactions: [Extract any notable reactions/comments from company posts]\nContent Strategy: [Analyze posting patterns and content themes]\nVisual Identity: [Note if logo and branding assets are available]\n\nContact Recommendations:\nBest Contact Method: [Recommend based on available data]\nOptimal Outreach Time: [Based on posting patterns if available]\n\n Data Processing Instructions\n\n1. **Plain Text Formatting Standards**\n- Use clear section headers with proper spacing\n- Use consistent indentation for sub-items (2-4 spaces)\n- Apply CAPITAL LETTERS for main section headers\n- Use clear labeling for all field names\n- Maintain consistent spacing between sections\n- Use dashes (-) for list items\n\n 2. **Content Enhancement**\n- Convert timestamps to human-readable format (e.g., \"March 15, 2024\")\n- Present URLs as complete, accessible links\n- Calculate engagement rates and provide percentage values\n- Indicate social media activity status clearly\n- Format addresses with proper line breaks\n\n3. **Missing Data Handling**\nUse \"Not Available\" or \"N/A\" for missing required information\n\n 4. **Quality Assurance**\n- Ensure consistent formatting throughout\n- Maintain proper spacing and alignment\n- Check that all information is clearly labeled\n- Use consistent terminology\n- Apply proper line breaks for readability\n\n Output Template Structure\n\nCOMPANY PROFILE\n===============================================================================\n\nCompany Name: [Company Name]\nTagline: [Tagline]\n\nQUICK FACTS\n-----------\nIndustry: [Industry]\nCompany Size: [Employee count]\nFounded: [Year]\nHeadquarters: [Location]\n\nDETAILED INFORMATION\n===================\n\n[Continue with all sections as outlined above using plain text formatting]\n\nEXECUTIVE SUMMARY\n================\n[2-3 sentence executive summary of the company based on all gathered data]\n\nREPORT METADATA\n==============\nLast Updated: [Current date]\nData Source: [Note source of information]\n\n Special Instructions\n\n Error Handling\nIf data extraction encounters errors, clearly note:\n\"Data Limitation: [Specific field] information could not be retrieved\"\n\n Engagement Calculations\n- Engagement Rate: (Likes + Comments + Shares) / Followers × 100\n- Reach Rate: Impressions / Followers × 100\n- Format as percentages with 2 decimal places\n\nContent Analysis Keywords\nWhen analyzing posts, look for and highlight:\n- Industry keywords\n- Company values\n- Product/service mentions\n- Partnership announcements\n- Hiring indicators\n- Growth signals\n\n Final Output Standards\n\nThe final plain text document should be:\n- Professional - Business-ready formatting without markup\n- Comprehensive - All available data included\n- Readable - Clear structure and clean typography\n- Actionable - Useful for business decisions\n- Consistent - Uniform formatting throughout\n- Accessible - Easy to scan and reference in any text editor\n\nThis enhanced prompt ensures your company data is transformed into a polished, professional plain text document suitable for reports, CRM systems, or any text-based application.",
+              "role": "system"
+            },
+            {
+              "content": "=Here is the company data to analyze :\n\n{{ $json.company_data }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        144,
+        672
+      ],
+      "id": "2dac9ea3-2b15-456b-8ff2-f74b4597c267",
+      "name": "data_parser1",
+      "retryOnFail": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "013b014f-b019-4ac9-a5af-9366ffef74a5",
+              "name": "final_company_data",
+              "value": "={{ $json.message.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        528,
+        672
+      ],
+      "id": "4e858db4-b9c8-455f-a788-000ba103ed81",
+      "name": "parsed_data1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0ea25180-7229-4af1-a75b-0ffbfad2be7e",
+              "name": "company_data",
+              "value": "={{ $json.company_data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -96,
+        672
+      ],
+      "id": "f7342962-6092-43a6-997c-5fde8ab09328",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const company_data = $input.all();\n\nreturn {\n  company_data:company_data\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        672
+      ],
+      "id": "4fc87699-c2df-4ad6-8478-9eff0b896ef0",
+      "name": "Code8"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -912,
+        1024
+      ],
+      "id": "8e6cc5ec-f101-4389-9204-1bbf1678dec4",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        912
+      ],
+      "id": "94970a3d-0aec-4073-b842-38a31713b242",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        1392
+      ],
+      "id": "6f4b2128-ab72-4640-ad5b-28a738ac3096",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1184,
+        1776
+      ],
+      "id": "5269214b-8ce0-4cf0-b899-78bcb13063cd",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "get all company info properly": [
+      {
+        "json": {
+          "text": "Google is a massive, multifaceted technology company that touches nearly every aspect of modern life. At its core, Google is about organizing information and making it accessible to everyone. It started as a search engine, and that remains a primary function – helping people find information on the internet through keywords, images, and even voice.\n\n**Search & Information:**\n\n*   **Search Engine:** Google's search engine is the dominant player worldwide, indexing billions of web pages. It uses sophisticated algorithms to deliver relevant results based on user queries. Google is continually refining its search technology.\n*   **Google Images:** A specialized search engine dedicated to finding images online.\n*   **Google Lens:** This tool lets you search using your phone's camera. You can point your camera at something, and Google Lens will identify it and provide related information.\n*   **Google Doodles:** The Google search logo is often changed to celebrate holidays, cultural events, and anniversaries, adding a touch of personality to the search experience.\n*   **Google App:** You can download the Google app to discover new ways to search using features like Lens, AI Overviews, Search Labs, and voice search.\n\n**Artificial Intelligence:**\n\n*   **Gemini:** Google's AI assistant, designed to help with tasks like writing, planning, and learning. It's a direct competitor to other AI assistants like ChatGPT.\n*   **AI Research:** Google is heavily invested in artificial intelligence research, exploring new developments in AI and scientific fields.\n\n**Products & Services:**\n\n*   **Android:** The world's most popular mobile operating system, powering smartphones and tablets from various manufacturers.\n*   **Google TV:** A smart TV platform that brings together streaming services, live TV, and apps in one place. It offers access to many free channels and apps.\n*   **Google Wallet:** A digital wallet for storing payment information, boarding passes, tickets, and more, allowing for contactless payments and easy access to everyday essentials.\n*   **Google Family Link:** A parental control app that helps parents manage their children's online activity, including setting screen time limits and filtering content.\n*   **Google Workspace:** A suite of productivity tools, including Gmail, Google Drive, Google Docs, Google Sheets, and Google Slides, designed for collaboration and communication.\n*   **YouTube:** The world's largest video-sharing platform, acquired by Google in 2006. It hosts a vast library of user-generated content, as well as professional content from media companies.\n*   **Google Pixel:** A line of smartphones, tablets, and other devices designed and manufactured by Google.\n\n**Beyond Search:**\n\n*   **About Google:** The \"About Google\" website provides information about the company's mission, values, and history.\n*   **Safety Center:** Google is invested in online safety and offers resources and tools to help users stay safe while using its services.\n*   **Grow with Google:** An initiative that provides training and tools to help businesses and individuals develop digital skills and grow their careers.\n*   **Google Research:** Google has a dedicated research division focused on scientific and technological advancements.\n*   **Family Groups:** Google facilitates family groups, allowing for shared app access, payment management, and other features within a family unit.\n*   **The Keyword:** Google's official blog, where it shares news and stories about its products, technology, and innovations.\n\n**Global Presence:**\n\n*   Google operates in numerous countries, with localized versions of its search engine and other services.\n*   The information is available in multiple languages.\n\n**In essence, Google is more than just a search engine. It's a technology giant with a wide-ranging portfolio of products and services, all driven by a mission to organize the world's information and make it universally accessible and useful. The company is constantly innovating, particularly in the field of artificial intelligence, and its influence on the internet and the digital world is undeniable.**"
+        }
+      }
+    ],
+    "On form submission": [
+      {
+        "json": {
+          "Who do you want to reach out to ?": "I want to reach out to realtors who are based in cities like Los Angeles, Miami, New York, Toronto, London, and Sydney, across countries such as the United States, Canada, the UK, and Australia. They should hold titles like Realtor, Real Estate Agent, Broker, or Property Consultant, and work at companies in the real estate, development, or property management industries. I'm targeting professionals with seniority levels like Owner, Partner, Manager, or Associate in small to mid-sized firms (1–200 employees). Their job functions should relate to sales, business development, or real estate transactions. The goal is to engage decision-makers and active agents within top-performing urban markets.",
+          "submittedAt": "2025-07-17T11:06:13.126-04:00",
+          "formMode": "test"
+        }
+      }
+    ],
+    "Google Sheets1": [
+      {
+        "json": {
+          "row_number": 2,
+          "first_name": "Alicia",
+          "last_name": "Nguyen",
+          "linkedin_profile": "https://linkedin.com/innovatech-me",
+          "company_name": "InnovaTech",
+          "message_1": "Hey Alicia, loved what InnovaTech is building.",
+          "message_2": "Curious if you're open to exploring custom AI sales infra.",
+          "message_3": "Sharing a quick overview here.",
+          "recording_url": "https://example.com/recordings/alicia",
+          "1st message sent": "yes",
+          "2nd message sent": "yes",
+          "3rd message sent": "yes",
+          "replied": "no",
+          "company_website": "https://YOUR_COMPANY_WEBSITE"
+        }
+      }
+    ],
+    "Google Sheets": [
+      {
+        "json": {
+          "row_number": 2,
+          "first_name": "Alicia",
+          "last_name": "Nguyen",
+          "linkedin_profile": "https://linkedin.com/nnovaTech",
+          "company_name": "InnovaTech",
+          "message_1": "Hey Alicia, loved what InnovaTech is building.",
+          "message_2": "Curious if you're open to exploring custom AI sales infra.",
+          "message_3": "Sharing a quick overview here.",
+          "recording_url": "https://example.com/recordings/alicia",
+          "1st message sent": "no",
+          "2nd message sent": "yes",
+          "3rd message sent": "yes",
+          "replied": "no"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Get Daily Count1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Daily Count1": {
+      "main": [
+        [
+          {
+            "node": "Code5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code4": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code5": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Get Daily Count1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structure Output": {
+      "main": [
+        [
+          {
+            "node": "jsonify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "jsonify": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Linkedin Sequence generation": {
+      "main": [
+        [
+          {
+            "node": "Structure Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request6": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSONIFY": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "get all company info properly",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "linkedin post info": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Apify API Request to scrape data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apify API Request to scrape data": {
+      "main": [
+        [
+          {
+            "node": "Apify get scraped data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apify get scraped data": {
+      "main": [
+        [
+          {
+            "node": "apify get full data from database id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "apify get full data from database id": {
+      "main": [
+        [
+          {
+            "node": "linkedin post info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get all company info properly": {
+      "main": [
+        [
+          {
+            "node": "JSONIFY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "process data for apollo and output its json": {
+      "main": [
+        [
+          {
+            "node": "output the perfect URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "apollo api request - fetch 100 leads": {
+      "main": [
+        [
+          {
+            "node": "Structure Apollo Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "process data for apollo and output its json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "output the perfect URL": {
+      "main": [
+        [
+          {
+            "node": "apollo api request - fetch 100 leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "linkedin research",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "web research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "web research": {
+      "main": [
+        [
+          {
+            "node": "extract web info1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "linkedin research": {
+      "main": [
+        [
+          {
+            "node": "linkedin post info2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "linkedin post info2": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract web info1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Code8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structure Apollo Data": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "data_parser1": {
+      "main": [
+        [
+          {
+            "node": "parsed_data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "data_parser1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code8": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parsed_data1": {
+      "main": [
+        [
+          {
+            "node": "Linkedin Sequence generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "extract web info1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Linkedin Sequence generation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "get all company info properly",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "process data for apollo and output its json",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ffc92808-9c86-4573-8c43-891c92ec40bc",
+  "meta": {
+    "instanceId": "1f9b134c3525ad50a35177621a05ade8c403caae1fa8ec11e75753428fe762ed"
+  },
+  "id": "E1k4kDeg5a3tGHLu",
+  "tags": []
+}

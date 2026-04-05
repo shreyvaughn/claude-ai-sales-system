@@ -1,0 +1,193 @@
+{
+  "name": "presentation_creator",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "presentation-builder",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "debe8dde-85cd-4bf1-8148-fe22903064f8",
+      "name": "Presentation Builder",
+      "webhookId": "123ef285-33dc-41e3-88a7-75f97962deea"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# Generate the text for a classy presentation using this call transcript and call summary for a call sent by Acme Corm to one of their prospects:\n\n### Call Transcript:\n\n{{ $json['call transcript'] }}\n\n\n### Call Summary:\n\n{{ $json['call summary'] }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "a81e0b9e-199d-4974-bf2e-1b0846d589f1",
+      "name": "generate text"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1eAFTA_QnuWdP0-yUsKDoSlOnqe4s4K2sD21C46L3qJQ",
+          "mode": "list",
+          "cachedResultName": "presentation",
+          "cachedResultUrl": "https://docs.google.com/presentation/d/1eAFTA_QnuWdP0-yUsKDoSlOnqe4s4K2sD21C46L3qJQ/edit?usp=drivesdk"
+        },
+        "name": "File Name",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        592,
+        0
+      ],
+      "id": "ecc08ced-95a0-4113-baa4-2d9e63688790",
+      "name": "Duplicate template",
+      "credentials": {
+        "googleApi": {
+          "id": "3tg5meqVyn4RwtNR",
+          "name": "Google Service Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "replaceText",
+        "presentationId": "={{ $json.id }}",
+        "textUi": {
+          "textValues": [
+            {
+              "text": "={{ text to replace }}",
+              "replaceText": "={{ $('generate text').item.json.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSlides",
+      "typeVersion": 2,
+      "position": [
+        800,
+        0
+      ],
+      "id": "5dec6456-5524-4da8-9e88-e53697e94114",
+      "name": "Google Slides - Replace text",
+      "credentials": {
+        "googleApi": {
+          "id": "3tg5meqVyn4RwtNR",
+          "name": "Google Service Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        192
+      ],
+      "id": "e0d7391b-9835-4909-9b04-870de021c79f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Presentation Builder": [
+      {
+        "json": {
+          "call transcript": "Agent: Hey John, can you hear me alright?\n\nUser: Hello? Yes, I can hear you clearly.\n\nAgent: Perfect. Thanks for confirming. So, I was told you're checking us out because you're curious about how realistic this voice sounds, right?\n\nUser: Yeah, I was really intrigued. It’s pretty impressive so far.\n\nAgent: Appreciate that! Mind if I ask you a couple of quick questions about how you're currently handling sales in your company?\n\nUser: Sure, go ahead.\n\nAgent: Awesome. From what I gathered, it looks like LinkedIn lead magnets are your primary source of leads, right? Things like lead gen forms, gated content, and maybe connection-based outreach?\n\nUser: That’s correct. We’ve been focusing heavily on LinkedIn for the past few months. It’s been decent, but we’re still exploring ways to improve conversion quality.\n\nAgent: Makes sense. That’s actually something we specialize in helping with. Would you be open to a deeper conversation around optimizing that pipeline?\n\nUser: Yeah, I’d be interested. Could you go ahead and book a call for me? I’m free the day after tomorrow at 5 PM.\n\nAgent: Got it. One moment... Okay, John — your appointment is confirmed for the day after tomorrow at 5 PM. You’ll get a calendar invite shortly.\n\nUser: Great, looking forward to it!\n\nAgent: Likewise! Talk to you soon",
+          "call summary": "John, intrigued by the natural quality of the AI voice, engaged in a discovery conversation where he confirmed LinkedIn lead magnets (including forms, gated content, and outreach) as his primary sales channel, acknowledged limitations in current lead-to-conversion performance, expressed interest in optimizing his sales pipeline, and proactively scheduled a follow-up appointment for in-depth discussion, confirmed for the day after tomorrow at 5 PM"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Presentation Builder": {
+      "main": [
+        [
+          {
+            "node": "generate text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate text": {
+      "main": [
+        [
+          {
+            "node": "Duplicate template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Duplicate template": {
+      "main": [
+        [
+          {
+            "node": "Google Slides - Replace text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "generate text",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ec66dcd5-0130-4476-824b-bf4926621d9c",
+  "meta": {
+    "instanceId": "1f9b134c3525ad50a35177621a05ade8c403caae1fa8ec11e75753428fe762ed"
+  },
+  "id": "jRHDo8cp7QTbvH5H",
+  "tags": [
+    {
+      "createdAt": "2025-06-08T14:41:22.944Z",
+      "updatedAt": "2025-06-08T14:41:22.944Z",
+      "id": "nK13yz0RxwNTem32",
+      "name": "Lead Magnet"
+    }
+  ]
+}

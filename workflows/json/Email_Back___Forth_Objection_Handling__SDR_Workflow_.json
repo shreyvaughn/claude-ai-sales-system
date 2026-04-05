@@ -1,0 +1,1270 @@
+{
+  "name": "Email_Back___Forth_Objection_Handling__SDR_Workflow_",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1280,
+        128
+      ],
+      "id": "cc182c19-99b4-4048-9a50-4ff890f3c9ee",
+      "name": "Gmail Trigger"
+    },
+    {
+      "parameters": {
+        "resource": "thread",
+        "operation": "get",
+        "threadId": "={{ $json.threadId }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1056,
+        128
+      ],
+      "id": "6518dcd2-eb74-4c7e-a4e2-6542d3e3d982",
+      "name": "Gmail1",
+      "webhookId": "2fa5ecc2-d956-4886-be0b-1e89d9cfd6db"
+    },
+    {
+      "parameters": {
+        "resource": "thread",
+        "operation": "reply",
+        "threadId": "={{ $('Gmail1').item.json.messages[1].threadId }}",
+        "messageId": "={{ $('Gmail1').item.json.messages[1].id }}",
+        "emailType": "html",
+        "message": "={{ $json.message.content }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1328,
+        144
+      ],
+      "id": "a9c1a881-dfe0-4507-81e5-700ae7a9076e",
+      "name": "Gmail2",
+      "webhookId": "a282b6c9-0361-46ff-90fe-4d78e30f1dce"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1104,
+        144
+      ],
+      "id": "30f2dce8-bcdf-4351-ab76-7a9826aec9f9",
+      "name": "Wait1",
+      "webhookId": "b95c990b-0352-41c9-b82e-9ae2632ae441"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0ebc2079-44d5-4294-8b42-ab5b973f0f11",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -608,
+        128
+      ],
+      "id": "4cf846c2-71f0-4c7d-8eea-2442c2ca6e06",
+      "name": "If2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        320
+      ],
+      "id": "884683d3-fc8e-43f7-98af-b6e74fef92ea",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.Stage }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "c3301fce-2398-46c8-966c-2200aaa0859a"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "eb367152-f262-4dbf-abaf-9d9791041444",
+                    "leftValue": "={{ $json.Stage }}",
+                    "rightValue": 2,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -336,
+        80
+      ],
+      "id": "a919b025-7d30-4798-b455-7d535510f3c7",
+      "name": "Switch2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=LEAD CONTEXT:\n\nName: {{ $('get data1').item.json['Full Name'] }}\nCompany: {{ $('get data1').item.json['Company Name'] }}\nCurrent Stage: {{ $('get data1').item.json.Stage }}\nLead Source: {{ $('get data1').item.json['Lead Source'] }}\n\nInitial Email Content : \n{{ $('If2').item.json['1st Email Content'] }}\n\nLEAD'S LATEST REPLY:\n{{ $('Gmail Trigger').item.json.snippet }}\n\nTEMPLATE TO PERSONALIZE:\nSubject: {{ $json['2nd Email Subject Lines Array'] }}\nBody: {{ $json['2nd Email Content'] }}\n\nINSTRUCTIONS:\nAnalyze the lead's reply for sentiment, intent, and key information. Then personalize the provided template to directly address their response while maintaining the template's core objectives. Reference specific points from their reply and adapt the tone/approach accordingly.\nOUTPUT:\nProvide the personalized email with subject line ready to send.",
+        "options": {
+          "systemMessage": "=## 🎯 AI SDR System Prompt (Strict HTML Email Output for n8n)\n\nYou are an expert AI Sales Development Representative (SDR). Your job is to analyze an incoming email reply from a lead, assess their sentiment and intent, and craft a high-converting, personalized email reply using a provided template as the base structure.\n\n---\n\n### 🧠 Instructions\n\nYour output **must follow these exact rules**:\n\n- ✅ Output **only the email body in valid HTML** format (no JSON, no markdown, no plain text)\n- ✅ Do **not** include the subject line or any extra formatting\n- ✅ Wrap the entire email inside a `<html><body>...</body></html>` structure\n- ✅ Do **not** explain your reasoning or include any commentary\n- ✅ Use inline `<p>`, `<strong>`, `<br>`, `<a>` tags where needed\n- ✅ Make sure the result is fully compatible with the **n8n Email/Gmail node**\n- ✅ Assume the subject line will be handled separately\n- ✅ The goal is to create a **personal, relevant, and brief** follow-up that moves the conversation forward\n\n---\n\n### 📝 Email Personalization Rules\n\nUse the **lead’s reply** (provided as input) to:\n\n1. Identify:\n   - Sentiment (positive, neutral, negative)\n   - Intent (interest, objection, pricing, meeting request, etc.)\n   - Urgency or time sensitivity\n   - Objections or blockers\n   - Buying signals\n   - Tone and writing style\n\n2. Extract and reference:\n   - Specific phrases, objections, or questions from the lead\n   - Their stated goals or pain points\n   - Timeline, decision maker hints, budget signals\n\n3. Personalize the template by:\n   - Referring to their exact language or points made\n   - Matching their tone (formal/informal)\n   - Addressing objections directly\n   - Keeping the message **short, skimmable, and focused**\n   - Ending with a **clear call-to-action** (e.g., book a time, reply with info)\n\n---\n\n### ✅ Example Output Format (Structure Only, no <html> or <body>)\n\n```html\n    <p>Hi (firstName),</p>\n    <p>Thanks for getting back. I totally understand that you're currently (theirReasonOrStatus).</p>\n    <p>Just to clarify — our platform can (specificBenefit) without requiring (objectionTheyMentioned).</p>\n    <p>If the timing isn’t ideal, I’m happy to reconnect later — but if you're open, I’d love to show you how we’ve helped others in (theirIndustryOrRole).</p>\n    <p>Would you be open to a quick 15-min call to explore this further?</p>\n    <p>Best,<br>NAME</p>\n  "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        0,
+        0
+      ],
+      "id": "650e52d6-5713-411b-a750-adb980908d83",
+      "name": "email body1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        592,
+        352
+      ],
+      "id": "40dae6b7-99e6-4608-80dd-39576521ba03",
+      "name": "Embeddings OpenAI"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        448
+      ],
+      "id": "5b98f551-738a-44e6-97b5-ec534be3950c",
+      "name": "Wait2",
+      "webhookId": "71c9bede-f43e-44f8-805e-df760f24f8fe"
+    },
+    {
+      "parameters": {
+        "resource": "thread",
+        "operation": "reply",
+        "threadId": "={{ $('Gmail1').item.json.messages[1].threadId }}",
+        "messageId": "={{ $('Gmail1').item.json.messages[1].id }}",
+        "emailType": "html",
+        "message": "={{ $json.message.content }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1360,
+        448
+      ],
+      "id": "3ad1881d-a674-47b5-a2f9-7a6e973bcf84",
+      "name": "Gmail3",
+      "webhookId": "a282b6c9-0361-46ff-90fe-4d78e30f1dce"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=LEAD CONTEXT:\n\nName: {{ $('get data1').item.json['Full Name'] }}\nCompany: {{ $('get data1').item.json['Company Name'] }}\nCurrent Stage: {{ $('get data1').item.json.Stage }}\nLead Source: {{ $('get data1').item.json['Lead Source'] }}\n\nInitial Email Content : \n{{ $('If2').item.json['1st Email Content'] }}\n\nLEAD'S LATEST REPLY:\n{{ $('Gmail Trigger').item.json.snippet }}\n\nTEMPLATE TO PERSONALIZE:\nSubject: {{ $json['2nd Email Subject Lines Array'] }}\nBody: {{ $json['2nd Email Content'] }}\n\nINSTRUCTIONS:\nAnalyze the lead's reply for sentiment, intent, and key information. Then personalize the provided template to directly address their response while maintaining the template's core objectives. Reference specific points from their reply and adapt the tone/approach accordingly.\nOUTPUT:\nProvide the personalized email with subject line ready to send.",
+        "options": {
+          "systemMessage": "=## 🔁 Stage 2 – AI SDR System Prompt (Second Follow-Up Reply)\n\nYou are an expert AI Sales Development Representative (SDR) assistant. Your task is to analyze the lead’s reply to a second-stage follow-up, extract relevant insights, and generate a personalized HTML email response using a provided template as a flexible foundation.\n\nThis is the **second follow-up in the outreach sequence**, meaning the lead has been previously contacted and may have shown limited or initial engagement. Your job is to intelligently move the conversation forward.\n\n---\n\n### 🧠 Process Overview\n\n1. **ANALYZE the lead’s reply** for:\n   - **Sentiment**: Positive / Neutral / Negative\n   - **Engagement Level**: Actively interested / Delayed / Passive / Resistant\n   - **Intent**: Objection, curiosity, urgency, brush-off, pricing request, scheduling interest\n   - **Readiness**: Are they evaluating? Just browsing? Looking for a solution?\n\n2. **EVALUATE** the provided email template and use it only as a **structural and tonal guide**.\n\n3. **EXTRACT INFORMATION** from the lead's message:\n   - Pain points\n   - Budget indicators\n   - Timeline urgency\n   - Buying signals\n   - Competitor mentions\n   - Role of decision-making\n   - Requirements or constraints\n\n4. **PERSONALIZE the email response**:\n   - Directly acknowledge what the lead said (quote or rephrase them naturally)\n   - Match their tone (e.g., formal, casual, skeptical, enthusiastic)\n   - Address any objections or blockers\n   - Keep the message value-focused and helpful\n   - Modify the template based on context — don’t follow it rigidly\n\n---\n\n### 💌 Output Format (Strict)\n\n**Your output must only include a fully structured HTML email body. No subject line, no explanation, no JSON, no markdown.**\n\n- Wrap everything inside `<html><body>...</body></html>`\n- Use tags like `<p>`, `<br>`, `<strong>`, `<a>` appropriately\n- CTA must be clear and visible in the body (e.g., calendar link, reply nudge)\n- The subject line will be handled separately in the automation — do **not** include it\n\n---\n\n### ✅ Example Output Format (Structure Only, no <html> or <body>)\n\n```html\n    <p>Hi (firstName),</p>\n    <p>Thanks for getting back. I totally understand that you're currently (theirReasonOrStatus).</p>\n    <p>Just to clarify — our platform can (specificBenefit) without requiring (objectionTheyMentioned).</p>\n    <p>If the timing isn’t ideal, I’m happy to reconnect later — but if you're open, I’d love to show you how we’ve helped others in (theirIndustryOrRole).</p>\n    <p>Would you be open to a quick 15-min call to explore this further?</p>\n    <p>Best,<br>NAME</p>\n  "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        112,
+        480
+      ],
+      "id": "dcafb1d8-654f-44dc-8717-5afc51a56a30",
+      "name": "email body2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        800
+      ],
+      "id": "14be6d07-e7f1-42cf-856b-79081187a7a5",
+      "name": "Embeddings OpenAI2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=",
+        "options": {
+          "systemMessage": "=## ✉️ AI Subject Line Generator – System Prompt (Stage 1 & Stage 2)\n\nYou are an AI agent whose sole responsibility is to generate **short, effective, and contextually relevant subject lines** for outbound email replies.\n\nYou will always be provided with:\n- The **email body** (generated by another AI agent based on the lead’s reply and previous touchpoints)\n- **Optional lead research** (company, role, industry, pain points, or product signals)\n\n---\n\n### 🎯 Your Objective\n\nWrite a **subject line that matches the tone, value, and intent of the email body**. The goal is to increase the chance of an open — **without sounding generic, salesy, or forced**.\n\n---\n\n### 🧠 Subject Line Guidelines\n\n- **Must be based on the email body content**\n- **May use insights** from lead research, pain points, or role\n- **Length**: 4–7 words (absolutely no more than 8)\n- **Style**: Clear, conversational, curiosity-driven, not hyped\n- **No overused phrases** like “Act Now,” “Unlock Growth,” “Double Your Sales”\n- **No emojis**, exclamation marks, or all-caps\n- **No first names** unless it sounds completely natural\n- **Avoid spammy phrasing** or marketing clichés\n\n---\n\n### ✅ Structure Options (Choose Based on Context)\n\nUse the structure that best aligns with the email body tone:\n\n- **[Pain Point] + Hint of Solution**  \n  e.g. `Manual Prospecting? There's a Smarter Way`\n\n- **Observation-Based Subject**  \n  e.g. `Saw You’re Scaling Outbound`\n\n- **Curiosity Without Hype**  \n  e.g. `What We Noticed With Agency Leads`\n\n- **Direct & Value-Focused**  \n  e.g. `AI Outreach Results for SaaS`\n\n- **Niche Personalization (by role, vertical, activity)**  \n  e.g. `For Founders Still Sending Cold Emails`\n\n---\n\n### 🔄 Output Rules\n\n- Return **only the subject line**\n- **Do not include quotes**, punctuation beyond periods or question marks\n- **Do not return JSON, HTML, or commentary**\n- The output must be final, usable in a live email without formatting edits\n- Must reflect **Stage 1** (initial follow-up) or **Stage 2** (lead reply engagement) tone\n\n---\n\n### ⚠️ Important Context\n\nThis subject line supports emails at:\n- **Stage 1** – First follow-up after initial outreach\n- **Stage 2** – Response to lead replies or objections\n\nThe tone can range from cold prospecting to warm clarification. You must read and understand the full **email body** before generating the subject line. Use all available cues to make it feel human, relevant, and frictionless to open.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "ebfa76cf-4a9c-4063-bcdb-69e0f41ea848",
+      "name": "subject creation"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "comany_knowledge_base",
+        "toolDescription": "Use this tool to extract information about our company.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "content-wf-copy-guide",
+          "mode": "list",
+          "cachedResultName": "content-wf-copy-guide"
+        },
+        "topK": 20,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        688
+      ],
+      "id": "96646936-43cb-46a8-b8e6-23f1ddd68848",
+      "name": "knowledgebase"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M",
+          "mode": "list",
+          "cachedResultName": "Advanced SDR Automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Email Sequencing",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Gmail2').item.json['Email'] }}",
+            "Latest Email Thread ID": "={{ $json.threadId }}",
+            "Lead Reply Status": "Replied",
+            "Stage": "3",
+            "Email Back & Forth raw content": "={{ $('subject creation').item.json.output }}, {{ $('email body1').item.json.output }}",
+            "Email Followups": "No"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone Numer",
+              "displayName": "Phone Numer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Website URL",
+              "displayName": "Company Website URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Pain Points",
+              "displayName": "Pain Points",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Lead Source",
+              "displayName": "Lead Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Lead Company Research",
+              "displayName": "Lead Company Research",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call Successful",
+              "displayName": "Call Successful",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call Status",
+              "displayName": "Call Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email Followups",
+              "displayName": "Email Followups",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "1st Email Subject Lines Array",
+              "displayName": "1st Email Subject Lines Array",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "1st Email Content / CTA / Trigger",
+              "displayName": "1st Email Content / CTA / Trigger",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "2nd Email Content / CTA / Trigger",
+              "displayName": "2nd Email Content / CTA / Trigger",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "3rd Email Content / CTA / Trigger",
+              "displayName": "3rd Email Content / CTA / Trigger",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Latest Email Thread ID",
+              "displayName": "Latest Email Thread ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Reply Status",
+              "displayName": "Lead Reply Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stage",
+              "displayName": "Stage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Email Sent",
+              "displayName": "Last Email Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email Back & Forth raw content",
+              "displayName": "Email Back & Forth raw content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1584,
+        144
+      ],
+      "id": "bc032c88-3ef6-4d2b-ab07-24b96a623bf4",
+      "name": "Google Sheets8"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M",
+          "mode": "list",
+          "cachedResultName": "Advanced SDR Automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Email Sequencing",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email Followups",
+              "lookupValue": "Yes"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -816,
+        128
+      ],
+      "id": "8f556f09-fb9f-4bed-ac6d-b0c5fa69021a",
+      "name": "get data1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M",
+          "mode": "list",
+          "cachedResultName": "Advanced SDR Automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Email Sequencing",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('get data1').item.json['Email'] }}",
+            "Latest Email Thread ID": "={{ $json.threadId }}",
+            "Lead Reply Status": "Replied",
+            "Stage": "3",
+            "Email Back & Forth raw content": "={{ $('subject').item.json.output }}, {{ $('email body2').item.json.output }}",
+            "Email Followups": "No"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone Numer",
+              "displayName": "Phone Numer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Website URL",
+              "displayName": "Company Website URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Pain Points",
+              "displayName": "Pain Points",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Lead Source",
+              "displayName": "Lead Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Lead Company Research",
+              "displayName": "Lead Company Research",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call Successful",
+              "displayName": "Call Successful",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call Status",
+              "displayName": "Call Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email Followups",
+              "displayName": "Email Followups",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "1st Email Subject Lines Array",
+              "displayName": "1st Email Subject Lines Array",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "1st Email Content / CTA / Trigger",
+              "displayName": "1st Email Content / CTA / Trigger",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "2nd Email Content / CTA / Trigger",
+              "displayName": "2nd Email Content / CTA / Trigger",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "3rd Email Content / CTA / Trigger",
+              "displayName": "3rd Email Content / CTA / Trigger",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Latest Email Thread ID",
+              "displayName": "Latest Email Thread ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Reply Status",
+              "displayName": "Lead Reply Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stage",
+              "displayName": "Stage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Email Sent",
+              "displayName": "Last Email Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email Back & Forth raw content",
+              "displayName": "Email Back & Forth raw content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1600,
+        448
+      ],
+      "id": "dad6b4c9-17a0-4802-a072-9c457d61f294",
+      "name": "Google Sheets11"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=",
+        "options": {
+          "systemMessage": "=You are an AI agent whose only responsibility is to generate short, effective, and relevant subject lines for outreach emails.\n\nYou will receive:\n\n    A previously generated email body written by another AI agent (included in the user message).\n\n    Relevant research data about the lead, their company, and/or industry.\n\nYour goal is to write a subject line that:\n\n    Is clear, relevant, and based on the core idea of the email body.\n\n    Feels personalized without including full names unless it's natural.\n\n    Avoids sounding like a marketing blast or generic spam.\n\n    Stays under 8 words, ideally between 4–7 words.\n\n    Sparks curiosity or contextual alignment, not hype or hard-sell.\n\nSubject Line Guidelines\n\n    Derived from the email body. Always read and understand the body before generating a subject line.\n\n    Anchored in research. Use insights from the research to highlight pain points, interests, or timely relevance.\n\n    Avoid overused sales phrases. Do not use terms like \"Limited Time,\" \"Boost Revenue Now,\" \"Unlock Growth,\" etc.\n\n    Avoid excessive punctuation like \"!!\", emojis, or all-caps.\n\nStructure Options (You can pick what fits best)\n\nUse these sparingly based on the tone of the email body:\n\n    [Pain Point] + Hint of Solution\n    Example: Manual Prospecting? There’s a Smarter Way\n\n    Observation-Based Subject\n    Example: Noticed You’re Scaling Outbound…\n\n    Curiosity Without Hype\n    Example: Something We Tried With Real Estate Leads\n\n    Direct & Value-Focused\n    Example: AI Sales Automation Impact\n\n    Niche Personalization\n    Example: For SaaS Founders Doing Manual Outreach\n\nOutput Instructions\n\n    Return only the subject line, no extra commentary or quotation marks.\n\n    Use the tone and topic of the email body to guide your phrasing.\n\n    If the body is vague, fall back on the most concrete insight or benefit.\n\n    Prioritize creativity. The goal is a line that would make the recipient want to open it because it sounds relevant and human.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        704,
+        464
+      ],
+      "id": "0f2cfe74-4a5b-43ac-82cd-f658677f4424",
+      "name": "subject"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "comany_knowledge_base",
+        "toolDescription": "Use this tool to extract information about our company.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "content-wf-copy-guide",
+          "mode": "list",
+          "cachedResultName": "content-wf-copy-guide"
+        },
+        "topK": 20,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.2,
+      "position": [
+        304,
+        208
+      ],
+      "id": "1ec99058-34d5-4078-82dc-12758e17c1f8",
+      "name": "knowledgebase1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        272
+      ],
+      "id": "ccb00e85-945a-42e3-af93-e190648c1e48",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        736
+      ],
+      "id": "ebb3cad7-6fa4-41b4-ad65-14c0bf6b3280",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        976,
+        736
+      ],
+      "id": "c13de925-ed29-4270-a53d-f6a478f6e350",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        832,
+        256
+      ],
+      "id": "922c1051-749c-4adc-a0f0-9a3f4a9a6574",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        [
+          {
+            "node": "get data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail2": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Gmail2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Switch2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch2": {
+      "main": [
+        [
+          {
+            "node": "email body1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "email body2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "email body1": {
+      "main": [
+        [
+          {
+            "node": "subject creation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "knowledgebase1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Gmail3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail3": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "email body2": {
+      "main": [
+        [
+          {
+            "node": "subject",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "knowledgebase",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "subject creation": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "knowledgebase": {
+      "ai_tool": [
+        [
+          {
+            "node": "email body2",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "subject",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get data1": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "subject": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "knowledgebase1": {
+      "ai_tool": [
+        [
+          {
+            "node": "email body1",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "subject creation",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "email body1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "email body2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "subject",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "subject creation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "69d77a8c-77d0-4f26-8e65-3daf52409481",
+  "meta": {
+    "instanceId": "1f9b134c3525ad50a35177621a05ade8c403caae1fa8ec11e75753428fe762ed"
+  },
+  "id": "Fq6zOYBMBFtrBNVa",
+  "tags": [
+    {
+      "createdAt": "2025-08-12T15:26:31.253Z",
+      "updatedAt": "2025-08-12T15:26:31.253Z",
+      "id": "e8xIFJHmAYmQZFWg",
+      "name": "SDR"
+    }
+  ]
+}

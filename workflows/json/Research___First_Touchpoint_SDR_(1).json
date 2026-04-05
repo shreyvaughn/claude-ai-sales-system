@@ -1,0 +1,3222 @@
+{
+  "name": "Research___First_Touchpoint_SDR_",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.retellai.com/v2/create-phone-call",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"retell_llm_dynamic_variables\": {\n    \"company_name\": \"{{ $('Prepare Lead Data').item.json['Company Website'] }}\",\n    \"opener\": \"Hey, this is (Your Name) from (Your Company) — I saw you signed up earlier and just wanted to personally welcome you. Is now a good time to chat for a few minutes?\"\n  },\n  \"metadata\": {\n    \"company_name\": \"{{ $('Prepare Lead Data').item.json['Company Website'] }}\",\n    \"email in list\": \"{{ $('Prepare Lead Data').item.json['Email'] }}\",\n    \"current calls sent value\": \"{{ $('Google Sheets10').item.json['calls sent'] }}\",\n    \"today's date row number\": \"{{ $('Google Sheets10').item.json.row_number }}\",\n    \"current humans picked value\": \"{{ $('Google Sheets10').item.json['human calls picked'] }}\",\n    \"current voicemails value\": \"{{ $('Google Sheets10').item.json.voicemails }}\",\n    \"current appointments booked value\": \"{{ $('Google Sheets10').item.json['appointments booked'] }}\",\n    \"current offer rejected people value\": \"{{ $('Google Sheets10').item.json['offer rejected'] }}\",\n    \"current cost incurred value\": \"{{ $('Google Sheets10').item.json['cost incurred'] }}\",\n    \"current formatted date\": \"{{ $now.format('dd-MM-yyyyy')}}\"\n  },\n  \"call_type\": \"phone_call\",\n  \"from_number\": \"(insert_retellai_phone_number_to_call_from)\",\n  \"to_number\": \"{{ $('Prepare Lead Data').item.json['phone number'] }}\",\n}\n",
+        "options": {}
+      },
+      "id": "ba132999-68a9-4744-bb07-be3d0283b197",
+      "name": "send call -  opener 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2000,
+        1632
+      ],
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "retryOnFail": false,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.retellai.com/v2/create-phone-call",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"retell_llm_dynamic_variables\": {\n    \"company_name\": \"{{ $('Prepare Lead Data').item.json['Company Website'] }}\",\n    \"opener\": \"Hi, this is (Your Name) — I’m with (Your Company). You popped up on our system after signing up, and I just wanted to make sure you're not missing out on the key features that can actually save you time right away.\"\n  },\n  \"metadata\": {\n    \"company_name\": \"{{ $('Prepare Lead Data').item.json['Company Website'] }}\",\n    \"email in list\": \"{{ $('Prepare Lead Data').item.json['Email'] }}\",\n    \"current calls sent value\": \"{{ $('Google Sheets10').item.json['calls sent'] }}\",\n    \"today's date row number\": \"{{ $('Google Sheets10').item.json.row_number }}\",\n    \"current humans picked value\": \"{{ $('Google Sheets10').item.json['human calls picked'] }}\",\n    \"current voicemails value\": \"{{ $('Google Sheets10').item.json.voicemails }}\",\n    \"current appointments booked value\": \"{{ $('Google Sheets10').item.json['appointments booked'] }}\",\n    \"current offer rejected people value\": \"{{ $('Google Sheets10').item.json['offer rejected'] }}\",\n    \"current cost incurred value\": \"{{ $('Google Sheets10').item.json['cost incurred'] }}\",\n    \"current formatted date\": \"{{ $now.format('dd-MM-yyyyy')}}\"\n  },\n  \"call_type\": \"phone_call\",\n  \"from_number\": \"(insert_retellai_phone_number_to_call_from)\",\n  \"to_number\": \"{{ $('Prepare Lead Data').item.json['phone number'] }}\",\n}\n",
+        "options": {}
+      },
+      "id": "8a8d0529-0913-4557-a9ca-f4a89b304128",
+      "name": "send call -  opener 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2000,
+        1840
+      ],
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "retryOnFail": false,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.retellai.com/v2/create-phone-call",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"retell_llm_dynamic_variables\": {\n    \"company_name\": \"{{ $('Prepare Lead Data').item.json['Company Website'] }}\",\n    \"opener\": \"Hi, (First Name) — this is (Your Name) from (Your Company). Quick one — did you get a chance to check out the tool after signing up, or are you still exploring to see if it’s the right fit?\"\n  },\n  \"metadata\": {\n    \"company_name\": \"{{ $('Prepare Lead Data').item.json['Company Website'] }}\",\n    \"email in list\": \"{{ $('Prepare Lead Data').item.json['Email'] }}\",\n    \"current calls sent value\": \"{{ $('Google Sheets10').item.json['calls sent'] }}\",\n    \"today's date row number\": \"{{ $('Google Sheets10').item.json.row_number }}\",\n    \"current humans picked value\": \"{{ $('Google Sheets10').item.json['human calls picked'] }}\",\n    \"current voicemails value\": \"{{ $('Google Sheets10').item.json.voicemails }}\",\n    \"current appointments booked value\": \"{{ $('Google Sheets10').item.json['appointments booked'] }}\",\n    \"current offer rejected people value\": \"{{ $('Google Sheets10').item.json['offer rejected'] }}\",\n    \"current cost incurred value\": \"{{ $('Google Sheets10').item.json['cost incurred'] }}\",\n    \"current formatted date\": \"{{ $now.format('dd-MM-yyyyy')}}\"\n  },\n  \"call_type\": \"phone_call\",\n  \"from_number\": \"(insert_retellai_phone_number_to_call_from)\",\n  \"to_number\": \"{{ $('Prepare Lead Data').item.json['phone number'] }}\",\n}\n",
+        "options": {}
+      },
+      "id": "e3e58e68-77e0-4ddc-96a5-76960f4e5499",
+      "name": "send call -  opener 3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2016,
+        2048
+      ],
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "retryOnFail": false,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.randomNumber }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "3ef8a40b-c1ff-431d-ace4-60cdac0806e5"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "opener 1"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1bbe409f-6e16-4f77-9047-a09e6e10cdce",
+                    "leftValue": "={{ $json.randomNumber }}",
+                    "rightValue": 2,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "opener 2"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "85226f13-afcc-42ac-8c2c-7e493c7b4008",
+                    "leftValue": "={{ $json.randomNumber }}",
+                    "rightValue": 3,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "opener 3"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1616,
+        1712
+      ],
+      "id": "ebe76a7c-0aca-4445-8909-cb6c91b20fc4",
+      "name": "decide opener"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Prepare Lead Data').item.json['Email'] }}",
+        "subject": "={{ $json.output }}",
+        "message": "={{ $('email body').item.json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1856,
+        848
+      ],
+      "id": "d45d518f-ed5d-484a-8205-62ed24355260",
+      "name": "Gmail",
+      "webhookId": "155e8c14-b2b1-4d5f-be81-a68e46f2697a"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=research data - {{ $('parsed_data').item }}",
+        "options": {
+          "systemMessage": "=### You are an AI email writing agent tasked with crafting highly effective outreach emails for leads based on research data provided to you. Your job is to write emails that are under 70 words, sound friendly but not overly casual, and avoid sounding salesy or overly technical. These are not cold sales pitches—they should feel like real humans writing to real humans, aiming to start a meaningful conversation, not close a deal in one go.\n\nPurpose of the Email:\n\n Spark interest and open a friendly, relevant conversation.\n\n Use research insights to make the message feel personal and well-informed.\n\n Position the sender as helpful and credible, not pushy or robotic.\n\n# Structure to Follow\n\n1. Hook / Opener (1 sentence)\n\n    Grab their attention with a relatable line, insight from research, or a casual observation.\n\n    Avoid generic openers like “Hope you’re doing well.” Instead, try something like:\n\n        “Saw what you’ve been doing at \"company\" with \n\"specific thing\"—really interesting.”\n\n2. Context / Value Add (2–3 sentences)\n\n    Show why you’re reaching out now, based on something relevant to them.\n\n    Mention what you do only if it ties directly into something they care about (from research).\n\n    Keep it natural and jargon-free. Avoid terms like “solutions” or “synergy.”\n\n        “We’ve been working with a few folks in \"industry\" who ran into something similar, and figured you might find it useful too.”\n\n3. Light CTA (1 sentence)\n\n    End with a simple question or soft ask.\n\n    No hard-selling, no “schedule a demo.”\n\n        “Want me to send over what we used that worked for them?”\n        “Worth chatting?”\n\n🔍 Tone Guidelines\n\n    Conversational, warm, and confident—like a smart peer offering something helpful.\n\n    No overly formal lines like “To whom it may concern,” and no slang either.\n\n    Short sentences. Easy to read. Human rhythm.\n\n    Avoid overpromising. You’re inviting, not convincing.\n\n    No filler phrases like “just reaching out,” “touching base,” or “would love to connect.”\n\n\n## OUTPUT FORMAT-\n\nJust the email body in html format without <htm> and then <body> tag."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        896,
+        928
+      ],
+      "id": "4ab1dbf2-4546-48a1-bc0f-a897c80cacb0",
+      "name": "email body"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=research data-  {{ $('parsed_data').item }}\n\nemail body- {{ $json.output }}",
+        "options": {
+          "systemMessage": "=You are an AI agent whose only responsibility is to generate short, effective, and relevant subject lines for outreach emails.\n\nYou will receive:\n\n    A previously generated email body written by another AI agent (included in the user message).\n\n    Relevant research data about the lead, their company, and/or industry.\n\nYour goal is to write a subject line that:\n\n    Is clear, relevant, and based on the core idea of the email body.\n\n    Feels personalized without including full names unless it's natural.\n\n    Avoids sounding like a marketing blast or generic spam.\n\n    Stays under 8 words, ideally between 4–7 words.\n\n    Sparks curiosity or contextual alignment, not hype or hard-sell.\n\nSubject Line Guidelines\n\n    Derived from the email body. Always read and understand the body before generating a subject line.\n\n    Anchored in research. Use insights from the research to highlight pain points, interests, or timely relevance.\n\n    Avoid overused sales phrases. Do not use terms like \"Limited Time,\" \"Boost Revenue Now,\" \"Unlock Growth,\" etc.\n\n    Avoid excessive punctuation like \"!!\", emojis, or all-caps.\n\nStructure Options (You can pick what fits best)\n\nUse these sparingly based on the tone of the email body:\n\n    [Pain Point] + Hint of Solution\n    Example: Manual Prospecting? There’s a Smarter Way\n\n    Observation-Based Subject\n    Example: Noticed You’re Scaling Outbound…\n\n    Curiosity Without Hype\n    Example: Something We Tried With Real Estate Leads\n\n    Direct & Value-Focused\n    Example: AI Sales Automation Impact\n\n    Niche Personalization\n    Example: For SaaS Founders Doing Manual Outreach\n\nOutput Instructions\n\n    Return only the subject line, no extra commentary or quotation marks.\n\n    Use the tone and topic of the email body to guide your phrasing.\n\n    If the body is vague, fall back on the most concrete insight or benefit.\n\n    Prioritize creativity. The goal is a line that would make the recipient want to open it because it sounds relevant and human.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        1456,
+        848
+      ],
+      "id": "fd4969c1-ab94-4f34-b3d9-031e88c7bc93",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "comany_knowledge_base",
+        "toolDescription": "Use this tool to extract information about our company.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "content-wf-copy-guide",
+          "mode": "list",
+          "cachedResultName": "content-wf-copy-guide"
+        },
+        "topK": 20,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        1152
+      ],
+      "id": "ecd2d281-c55a-4540-ad57-22541642668b",
+      "name": "Pinecone Vector Store1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1632,
+        1280
+      ],
+      "id": "c09b6de7-306d-4656-ab18-e2e242f1ae36",
+      "name": "Embeddings OpenAI1"
+    },
+    {
+      "parameters": {
+        "url": "=https://emailverifier.reoon.com/api/v1/verify?email={{ $json.Email }}&key={Your API Key}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -5296,
+        1328
+      ],
+      "id": "ac59c989-0c37-4db6-99f2-4c79c9939766",
+      "name": "Email Verification",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "email-valid-check",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "valid",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -5072,
+        1328
+      ],
+      "id": "48664aa9-dd74-4ab1-ac36-4502a8f2be76",
+      "name": "Email Validation Check"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "originalStartUrl",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -4192,
+        1008
+      ],
+      "id": "73c6c531-c6a9-445b-ba61-ac1a84312319",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the input data from the previous node\nconst inputData = $input.all();\n\n// Initialize aggregation object\nconst aggregated = {\n  emails: [],\n  phones: [],\n  phonesUncertain: [],\n  linkedinurl: [],\n  twitters: [],\n  instagrams: [],\n  facebooks: [],\n  youtubes: [],\n  tiktoks: [],\n  pinterests: [],\n  discords: [],\n  referrerUrl: null,\n  url: null,\n  domain: null,\n  originalStartUrl: null\n};\n\n// Process each item from the input\ninputData.forEach(item => {\n  const {\n    emails = [],\n    phones = [],\n    phonesUncertain = [],\n    linkedinurl = [],\n    twitters = [],\n    instagrams = [],\n    facebooks = [],\n    youtubes = [],\n    tiktoks = [],\n    pinterests = [],\n    discords = [],\n    referrerUrl,\n    url,\n    domain,\n    originalStartUrl\n  } = item.json;\n\n  // Aggregate array fields (avoid duplicates)\n  const arrayFields = [\n    'emails', 'phones', 'phonesUncertain', 'linkedIns', \n    'twitters', 'instagrams', 'facebooks', 'youtubes', \n    'tiktoks', 'pinterests', 'discords'\n  ];\n\n  arrayFields.forEach(field => {\n    const fieldData = item.json[field];\n    if (Array.isArray(fieldData)) {\n      fieldData.forEach(value => {\n        if (value && !aggregated[field].includes(value)) {\n          aggregated[field].push(value);\n        }\n      });\n    }\n  });\n\n  // Set single value fields (use first non-null value)\n  const singleFields = ['referrerUrl', 'url', 'domain', 'originalStartUrl'];\n  singleFields.forEach(field => {\n    const fieldValue = item.json[field];\n    if (!aggregated[field] && fieldValue) {\n      aggregated[field] = fieldValue;\n    }\n  });\n});\n\n// Create output format that n8n expects\nconst output = [{\n  json: {\n    ...aggregated,\n    totalItemsProcessed: inputData.length,\n    aggregationTimestamp: new Date().toISOString()\n  }\n}];\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4000,
+        1008
+      ],
+      "id": "839bb9b6-0641-4f5a-9474-9cfc4c54ddca",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "url": "https://api.apify.com/v2/acts/vdrmota~contact-info-scraper/run-sync-get-dataset-items?token=",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"considerChildFrames\": true,\n    \"maxDepth\": 5,\n    \"maxRequests\": 9999999,\n    \"maxRequestsPerStartUrl\": 20,\n    \"sameDomain\": true,\n    \"startUrls\": [\n        {\n            \"url\": \"{{ $('Prepare Lead Data').item.json[\"Company Website\"] }}\",\n            \"method\": \"GET\"\n        }\n    ],\n    \"useBrowser\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -4368,
+        1008
+      ],
+      "id": "09625fe7-7d1c-4636-948c-d7102415af65",
+      "name": "Company Data Scraping",
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5c979280-31f2-43b6-8291-bc2f98694a8d",
+              "leftValue": "={{ $json.linkedinurl }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "array",
+                "operation": "lengthGt",
+                "rightType": "number"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3840,
+        1008
+      ],
+      "id": "2912a98b-ce70-4620-bf5c-e76768bc6474",
+      "name": "LinkedIn Company Data"
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -2336,
+        1392
+      ],
+      "id": "6ecc3a37-9372-4c47-8c42-774058582a20",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0ea25180-7229-4af1-a75b-0ffbfad2be7e",
+              "name": "company_data",
+              "value": "={{ $json.company_data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1696,
+        1408
+      ],
+      "id": "4b0e35c2-eea6-4011-b7f4-dcde6fec3ac2",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const company_data = $input.all();\n\nreturn {\n  company_data:company_data\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1920,
+        1408
+      ],
+      "id": "858a24e7-3329-4b26-a758-2a220c3305ab",
+      "name": "Code5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/apify~website-content-crawler/run-sync-get-dataset-items",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "token"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"aggressivePrune\": false,\n    \"clickElementsCssSelector\": \"[aria-expanded=\\\"false\\\"]\",\n    \"clientSideMinChangePercentage\": 15,\n    \"crawlerType\": \"playwright:adaptive\",\n    \"debugLog\": false,\n    \"debugMode\": false,\n    \"expandIframes\": true,\n    \"ignoreCanonicalUrl\": false,\n    \"keepUrlFragments\": false,\n    \"proxyConfiguration\": {\n        \"useApifyProxy\": true\n    },\n    \"readableTextCharThreshold\": 100,\n    \"removeCookieWarnings\": true,\n    \"removeElementsCssSelector\": \"nav, footer, script, style, noscript, svg, img[src^='data:'],\\n[role=\\\"alert\\\"],\\n[role=\\\"banner\\\"],\\n[role=\\\"dialog\\\"],\\n[role=\\\"alertdialog\\\"],\\n[role=\\\"region\\\"][aria-label*=\\\"skip\\\" i],\\n[aria-modal=\\\"true\\\"]\",\n    \"renderingTypeDetectionPercentage\": 10,\n    \"respectRobotsTxtFile\": true,\n    \"saveFiles\": false,\n    \"saveHtml\": false,\n    \"saveHtmlAsFile\": false,\n    \"saveMarkdown\": true,\n    \"saveScreenshots\": false,\n    \"startUrls\": [\n        {\n            \"url\": \"{{ $json.website }}\",\n            \"method\": \"GET\"\n        }\n    ],\n    \"useSitemaps\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -4368,
+        1312
+      ],
+      "id": "69f2b9bd-8e00-4c82-b027-5dcdf5aaf73a",
+      "name": "web research1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/dev_fusion~linkedin-profile-scraper/run-sync-get-dataset-items",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "token",
+              "value": "="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"profileUrls\": [ \"{{ $json.linkedin_profile }}\"\n    ]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3552,
+        992
+      ],
+      "id": "da02658b-616d-4583-9549-14fb93700aa5",
+      "name": "linkedin research1"
+    },
+    {
+      "parameters": {
+        "url": "https://api.apify.com/v2/acts/supreme_coder~linkedin-post/run-sync-get-dataset-items?token=",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"deepScrape\": true,\n    \"limitPerSource\": 1,\n    \"rawData\": true,\n    \"urls\": [\n        \"{{ $('LinkedIn Company Data').item.json.linkedIns[0] }}\"\n    ]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3328,
+        992
+      ],
+      "id": "06ac7765-ecf5-4177-920a-6a56a2861e38",
+      "name": "linkedin post info",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('web research1').item.output }}",
+        "options": {
+          "systemMessage": "=You are a Website Intelligence Agent.\nYour sole responsibility is to analyze the raw website data (HTML, text, or structured content) and extract all useful, factual information about the business that can be used for personalized email and call outreach.\n\nYour output must be structured, clear, and focused only on relevant insights — no tone analysis, no messaging breakdowns, and no creative writing.\n\nFormat your response using the following 3 sections:\n1. Company Overview:\n\n    Business name\n\n    What the company does (in one line)\n\n    Industry and niche (if possible)\n\n    Target customers (e.g. B2B SaaS, DTC brands, enterprise, local business, etc.)\n\n    Headquarters or location (if available)\n\n2. Product or Services:\n\n    Description of products or services\n\n    Core features or offerings\n\n    Unique selling points or value propositions\n\n    Any mention of pricing, free trial, or how users engage\n\n    Integrations or technologies mentioned\n\n3. Notable Highlights (if present):\n\n    Partnerships, clients, case studies, press mentions\n\n    Testimonials or social proof\n\n    Awards, funding, or milestones\n\nDo not interpret or assume. Only extract what's present in the content. Be as concise and factual as possible."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -3936,
+        1312
+      ],
+      "id": "ba4a1884-e777-435c-9520-c9e1f13466f5",
+      "name": "extract web info"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Mode: Run Once For All Items\nconst lead = $('Prepare Lead Data').first().json;\nconst finalCData = $input.first().json.final_company_data;\n\nconst fullName         = lead['Full Name'];\nconst email            = lead.Email;\nconst company          = lead.Company;\nconst jobTitle         = lead['Job Title'];\nconst companyWebsite   = lead['Company Website'];\nconst painPoints       = lead['Pain Points / Challenges'];\nconst leadSource       = lead['Lead Source'];\nconst submittedAt      = lead.submittedAt;\nconst formMode         = lead.formMode;\nconst leadId           = lead.leadId;\nconst timestamp        = lead.timestamp;\n\nreturn {\n  json: {\n    final_company_data: finalCData,\n    fullName,\n    email,\n    company,\n    jobTitle,\n    companyWebsite,\n    painPoints,\n    leadSource,\n    submittedAt,\n    formMode,\n    leadId,\n    timestamp,\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        1408
+      ],
+      "id": "81c03ce4-b1b9-43db-82ab-5facf251deee",
+      "name": "Code6"
+    },
+    {
+      "parameters": {
+        "formTitle": "Lead Capture & Analysis",
+        "formDescription": "Enter lead information to start AI-powered email nurturing sequence",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name",
+              "placeholder": "John Smith",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "placeholder": "john@company.com",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company",
+              "placeholder": "Company Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Job Title",
+              "placeholder": "CEO, Marketing Director, etc."
+            },
+            {
+              "fieldLabel": "Company Website",
+              "placeholder": "https://company.com"
+            },
+            {
+              "fieldLabel": "Pain Points / Challenges",
+              "fieldType": "textarea",
+              "placeholder": "What challenges are you facing?"
+            },
+            {
+              "fieldLabel": "Lead Source",
+              "placeholder": "LinkedIn, Website, Referral, etc."
+            },
+            {
+              "fieldLabel": "LinkedIn Url",
+              "placeholder": "https://linkedin.com/in/your-profile"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -5840,
+        1216
+      ],
+      "id": "4ab87873-eeb2-441b-88b0-79563b4dc00d",
+      "name": "Lead Capture Form",
+      "webhookId": "lead-capture-form"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M",
+          "mode": "list",
+          "cachedResultName": "Advanced SDR Automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Email Sequencing",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Full Name": "={{ $('Prepare Lead Data').item.json['Full Name'] }}",
+            "Lead Company Research": "={{ $('parsed_data').item }}",
+            "Company Website URL": "={{ $('Prepare Lead Data').item.json['Company Website'] }}",
+            "Email": "={{ $('Prepare Lead Data').item.json['Email'] }}",
+            "Company Name": "={{ $('Prepare Lead Data').item.json['Company'] }}",
+            "Pain Points": "={{ $('Prepare Lead Data').item.json['Pain Points / Challenges'] }}",
+            "Lead Source": "={{ $('Prepare Lead Data').item.json['Source'] }}",
+            "Lead Reply Status": "Awaiting",
+            "Stage": "1",
+            "Latest Email Thread ID": "={{ $('Gmail').item.json.threadId }}",
+            "Last Email Sent": "={{ $now.format('dd-MM-yyyy') }}",
+            "Phone Numer": "={{ $('Prepare Lead Data').item.json['Phone Number'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone Numer",
+              "displayName": "Phone Numer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company Website URL",
+              "displayName": "Company Website URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pain Points",
+              "displayName": "Pain Points",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Source",
+              "displayName": "Lead Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Company Research",
+              "displayName": "Lead Company Research",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Call Status",
+              "displayName": "Call Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email Followups",
+              "displayName": "Email Followups",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "1st Email Subject Lines Array",
+              "displayName": "1st Email Subject Lines Array",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "1st Email Content / CTA / Trigger",
+              "displayName": "1st Email Content / CTA / Trigger",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "2nd Email Content / CTA / Trigger",
+              "displayName": "2nd Email Content / CTA / Trigger",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "3rd Email Content / CTA / Trigger",
+              "displayName": "3rd Email Content / CTA / Trigger",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Latest Email Thread ID",
+              "displayName": "Latest Email Thread ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Reply Status",
+              "displayName": "Lead Reply Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stage",
+              "displayName": "Stage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Email Sent",
+              "displayName": "Last Email Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2128,
+        848
+      ],
+      "id": "c16ebb09-f748-433c-bee9-bf4226001068",
+      "name": "Google Sheets"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      randomNumber: Math.floor(Math.random() * 3) + 1\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        1696
+      ],
+      "id": "6f8abc3e-103d-4968-bcda-4e3f023f2d9c",
+      "name": "Code8"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M",
+          "mode": "list",
+          "cachedResultName": "Advanced SDR Automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 581945708,
+          "mode": "list",
+          "cachedResultName": "Call Stats",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M/edit#gid=581945708"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "date",
+              "lookupValue": "={{ $now.format('dd-MM-yyyy') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        608,
+        1712
+      ],
+      "id": "97702f44-d6fa-441d-a0c3-e2aea0c81144",
+      "name": "Google Sheets10"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "31e6f1dd-c031-4518-b809-bcd2f6b30f1a",
+              "name": "leadid",
+              "value": "={{ $now }}",
+              "type": "string"
+            },
+            {
+              "id": "2fd4b655-6b19-4b89-b345-e12ebbd2c9bc",
+              "name": "Full Name",
+              "value": "={{ $json[\"Full Name\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "ff23cfe4-95b9-4c4a-b9a0-0455fb03a2be",
+              "name": "Email",
+              "value": "={{ $json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "93fd16c0-80cd-41dc-b3d7-e4e28420902b",
+              "name": "Phone Number",
+              "value": "={{ $json[\"Phone Number\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "88fd8627-374b-4700-9a5a-cb0a84bf7940",
+              "name": "Company",
+              "value": "={{ $json.Company }}",
+              "type": "string"
+            },
+            {
+              "id": "5ad40e0e-f09f-40ef-a144-1ea8aafdac65",
+              "name": "Job Title",
+              "value": "={{ $json[\"Job Title\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "ae7e764f-98fa-4d39-8122-6a0e3cfb2b2a",
+              "name": "Company Website",
+              "value": "={{ $json[\"Company Website\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "46defbf2-9410-4691-b6b2-7efd05722872",
+              "name": "Pain Points / Challenges",
+              "value": "={{ $json[\"Pain Points / Challenges\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "16d8f2b8-0050-470f-8709-841f4b802a1e",
+              "name": "Lead Source",
+              "value": "={{ $json[\"Lead Source\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "timestamp-id",
+              "name": "timestamp",
+              "value": "={{ $now.format('dd-MM-yyyy') }}",
+              "type": "string"
+            },
+            {
+              "id": "6a27f0cd-81da-4c70-9fb3-47126ae9a2ce",
+              "name": "Linkedin Url",
+              "value": "={{ $json[\"Linkedin Url\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "ded3718f-c80c-4c35-bff4-61cf57f7b6e0",
+              "name": "X",
+              "value": "={{ $json[\"Twitter/X\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -5520,
+        1328
+      ],
+      "id": "e30088d1-fcb9-452a-b82c-539389e06f8b",
+      "name": "Prepare Lead Data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "013b014f-b019-4ac9-a5af-9366ffef74a5",
+              "name": "final_company_data",
+              "value": "={{ $json.message.content }}",
+              "type": "string"
+            },
+            {
+              "id": "da0273c2-b5ad-4460-9b2e-49486df22095",
+              "name": "webhook_url",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1072,
+        1408
+      ],
+      "id": "d0550713-8adc-4b25-9ae7-a04daa8c398a",
+      "name": "parsed_data"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2ca9bc80-e29d-44ab-90ef-09aa77ecd4d8",
+              "leftValue": "={{ $('Prepare Lead Data').item.json['phone number'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -112,
+        1408
+      ],
+      "id": "0aa05b43-d90f-41db-876f-11790f8c4281",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M",
+          "mode": "list",
+          "cachedResultName": "Advanced SDR Automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Email Sequencing",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qMzeef0DG4opk4LW0_l_8YjMcGTIazydoGfbB5kiw6M/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Phone Numer": "={{ $('Prepare Lead Data').item.json['Phone Number'] }}",
+            "Call Status": "Sent"
+          },
+          "matchingColumns": [
+            "Phone Numer"
+          ],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone Numer",
+              "displayName": "Phone Numer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Website URL",
+              "displayName": "Company Website URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Pain Points",
+              "displayName": "Pain Points",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Lead Source",
+              "displayName": "Lead Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Lead Company Research",
+              "displayName": "Lead Company Research",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call Successful",
+              "displayName": "Call Successful",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call Status",
+              "displayName": "Call Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Followups",
+              "displayName": "Email Followups",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "1st Email Subject Lines Array",
+              "displayName": "1st Email Subject Lines Array",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "1st Email Content / CTA / Trigger",
+              "displayName": "1st Email Content / CTA / Trigger",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "2nd Email Content / CTA / Trigger",
+              "displayName": "2nd Email Content / CTA / Trigger",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "3rd Email Content / CTA / Trigger",
+              "displayName": "3rd Email Content / CTA / Trigger",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Latest Email Thread ID",
+              "displayName": "Latest Email Thread ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Lead Reply Status",
+              "displayName": "Lead Reply Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Stage",
+              "displayName": "Stage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Email Sent",
+              "displayName": "Last Email Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2288,
+        1840
+      ],
+      "id": "5c0d4e21-7114-4822-a203-09d9177a267b",
+      "name": "add row"
+    },
+    {
+      "parameters": {
+        "content": "## Research Agent",
+        "height": 1600,
+        "width": 3120,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -6080,
+        720
+      ],
+      "id": "057e29fb-c6bf-4bbb-bf06-115525078068",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -656,
+        1408
+      ],
+      "id": "80abc852-3229-407a-826c-951ab6a61df9",
+      "name": "Append or update row in sheet"
+    },
+    {
+      "parameters": {
+        "url": "https://api11.unipile.com:14142/api/v1/accounts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "yHajUWkl.DDesDyDMpYqSWmaNchikJOKlMvQYZvq8UkqeK7SXiJY="
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        112
+      ],
+      "id": "7b2af062-c822-433d-bc62-32d73e4c616e",
+      "name": "get linkedin account id",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api11.unipile.com:14142/api/v1/chats",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "{YOUR_ACCESS_TOKEN}"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "account_id",
+              "value": "={{ $json.items[0].connection_params.im.id }}"
+            },
+            {
+              "name": "attendees_ids",
+              "value": "{LINKEDIN_INTERNAL_ID}"
+            },
+            {
+              "name": "linkedin[api]",
+              "value": "classic"
+            },
+            {
+              "name": "linkedin[connect]",
+              "value": "true"
+            },
+            {
+              "name": "text",
+              "value": "Hey, saw your profile and thought we should connect!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1888,
+        272
+      ],
+      "id": "ffd508c1-4c8d-4aaf-8ade-afef77b93b3a",
+      "name": "send connectiong req",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "12542798-c132-40f4-992c-0a858e3af315",
+              "leftValue": "={{ $json.items[0].type }}",
+              "rightValue": "LINKEDIN",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1152,
+        112
+      ],
+      "id": "320961a0-58ab-4647-bc3a-1d085b144885",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api11.unipile.com:14142/api/v1/chats",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "{YOUR_ACCESS_TOKEN}"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "account_id",
+              "value": "{YOUR_ACCOUNT_ID}"
+            },
+            {
+              "name": "attendees_ids",
+              "value": "{LINKEDIN_INTERNAL_ID}"
+            },
+            {
+              "name": "text",
+              "value": "Hi, I’d love to introduce myself..."
+            },
+            {
+              "name": "linkedin[api]",
+              "value": "classic"
+            },
+            {
+              "name": "linkedin[inmail]",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1552,
+        96
+      ],
+      "id": "50202b87-1a5b-4af1-8f49-313615ae4fb2",
+      "name": "try INMAIL",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "content": "## LinkedIn DM Agent",
+        "height": 860,
+        "width": 2240
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        208,
+        -112
+      ],
+      "id": "256bd973-f346-4715-867b-0c24f6cccdb3",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Email Agent",
+        "height": 700,
+        "width": 2240,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        208,
+        800
+      ],
+      "id": "5dba8f29-06b1-469c-ba28-edc992a3c70a",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## AI Voice Agent",
+        "height": 700,
+        "width": 2240,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        208,
+        1568
+      ],
+      "id": "4c49a485-e5ac-41bd-b099-451c33badfb7",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use this tool to pull knowledgebase of our company",
+        "pineconeIndex": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "topK": 50,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        1088,
+        1920
+      ],
+      "id": "d7f17b12-aa55-4906-9478-95731e04df35",
+      "name": "Pinecone Vector Store2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1328,
+        2048
+      ],
+      "id": "93147cbd-016f-4918-84c1-9495ad9bec57",
+      "name": "Embeddings OpenAI3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ ('parsed_data').webhook_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -432,
+        1408
+      ],
+      "id": "4743102e-a22f-4713-92ab-bf6fa8538320",
+      "name": "Trigger Outreac Assistant"
+    },
+    {
+      "parameters": {
+        "content": "## Research Analyzer Agent",
+        "height": 880,
+        "width": 2160,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2432,
+        1040
+      ],
+      "id": "0cf81d32-8a71-4769-9f61-97ac4bd2a361",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3e001f8b-c6e2-4bf2-8012-c8ecf8f39094",
+              "leftValue": "={{ $('Prepare Lead Data').item.json['Linkedin Url'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        192
+      ],
+      "id": "7ebd620b-e60a-434d-9ebf-1c022d9d34d1",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "c781ac09-5bfd-4c57-a8a1-eaa666976fd4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -5808,
+        1552
+      ],
+      "id": "87e2d91b-45c8-487e-b29b-a2759979f8c1",
+      "name": "Webhook",
+      "webhookId": "c781ac09-5bfd-4c57-a8a1-eaa666976fd4"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        912,
+        320
+      ],
+      "id": "64ee1b32-9fc7-4c15-b355-d5a6371eefdf",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here is the company data to analyze :\n\n{{ $json.company_data }}",
+        "options": {
+          "systemMessage": "# Task\nTransform raw company data into a clean, structured company profile in **human-readable plain text format** for enhanced readability and professional presentation.\n Required Output Format\n\nThe output should be formatted as a comprehensive plain text document with clear sections and proper formatting:\n\n COMPANY OVERVIEW\nCompany Name: [Extract from name field]\nTagline: [Extract from tagline field]\nIndustry: [Extract from industries array]\nCompany Type: [Extract from companyType field]\nFounded: [Extract from foundedOn.year field]\nEmployee Count: [Extract from employeeCount and employeeCountRange]\nHeadquarters: [Extract from locations array - headquarter location]\nWebsite: [Extract from website field]\nLinkedIn Profile: [Extract from linkedinUrl field]\n\n CONTACT INFORMATION\nPrimary Email: [Extract from emails array]\nPhone Numbers: [Extract from phones array, note if uncertain]\nPhysical Address: [Extract complete address from locations - format as multi-line address]\n\nDIGITAL PRESENCE\nLinkedIn: [Extract from linkedIns array] (Status: Active/Inactive)\nTwitter: [Extract from twitters array] (Status: Active/Inactive)\nInstagram: [Extract from instagrams array] (Status: Active/Inactive)\nFacebook: [Extract from facebooks array] (Status: Active/Inactive)\nYouTube: [Extract from youtubes array] (Status: Active/Inactive)\nOther Platforms: [List any other social media platforms found]\n\n RECENT ACTIVITY & ENGAGEMENT\nLatest LinkedIn Post:\n  Date: [Extract from postedAtISO, convert to readable format]\n  Engagement Metrics:\n    - Likes: [Extract likes]\n    - Comments: [Extract comments]\n    - Shares: [Extract shares]\n    - Impressions: [Extract impressions]\n  Content Summary: [Summarize the post text in 1-2 sentences]\n  Post Type: [Extract from type field]\n  Post URL: [Extract post URL]\n\nSocial Media Metrics:\n  LinkedIn Followers: [Extract from followerCount]\n  Average Engagement Rate: [Calculate: (likes + comments + shares) / followers * 100]%\n  Content Reach: [Extract impression data if available]\n\n COMPANY DETAILS\nDescription: [Extract from description field - format as readable paragraph]\n\nSpecialties: [Extract from specialities array and format as list]\n- [Specialty 1]\n- [Specialty 2]\n- [Specialty 3]\n\n LOCATIONS\nHeadquarters: [Primary location with full address]\n\nAdditional Offices:\n- [Location 2: Address]\n- [Location 3: Address]\n\n ADDITIONAL INSIGHTS\nTechnology Stack: [If mentioned in posts or descriptions, extract and list]\n\nRecent Developments:\n- [Key developments from recent posts]\n- [Notable company updates]\n- [Partnership announcements]\n\nKey Personnel Interactions: [Extract any notable reactions/comments from company posts]\nContent Strategy: [Analyze posting patterns and content themes]\nVisual Identity: [Note if logo and branding assets are available]\n\nContact Recommendations:\nBest Contact Method: [Recommend based on available data]\nOptimal Outreach Time: [Based on posting patterns if available]\n\n Data Processing Instructions\n\n1. **Plain Text Formatting Standards**\n- Use clear section headers with proper spacing\n- Use consistent indentation for sub-items (2-4 spaces)\n- Apply CAPITAL LETTERS for main section headers\n- Use clear labeling for all field names\n- Maintain consistent spacing between sections\n- Use dashes (-) for list items\n\n 2. **Content Enhancement**\n- Convert timestamps to human-readable format (e.g., \"March 15, 2024\")\n- Present URLs as complete, accessible links\n- Calculate engagement rates and provide percentage values\n- Indicate social media activity status clearly\n- Format addresses with proper line breaks\n\n3. **Missing Data Handling**\nUse \"Not Available\" or \"N/A\" for missing required information\n\n 4. **Quality Assurance**\n- Ensure consistent formatting throughout\n- Maintain proper spacing and alignment\n- Check that all information is clearly labeled\n- Use consistent terminology\n- Apply proper line breaks for readability\n\n Output Template Structure\n\nCOMPANY PROFILE\n===============================================================================\n\nCompany Name: [Company Name]\nTagline: [Tagline]\n\nQUICK FACTS\n-----------\nIndustry: [Industry]\nCompany Size: [Employee count]\nFounded: [Year]\nHeadquarters: [Location]\n\nDETAILED INFORMATION\n===================\n\n[Continue with all sections as outlined above using plain text formatting]\n\nEXECUTIVE SUMMARY\n================\n[2-3 sentence executive summary of the company based on all gathered data]\n\nREPORT METADATA\n==============\nLast Updated: [Current date]\nData Source: [Note source of information]\n\n Special Instructions\n\n Error Handling\nIf data extraction encounters errors, clearly note:\n\"Data Limitation: [Specific field] information could not be retrieved\"\n\n Engagement Calculations\n- Engagement Rate: (Likes + Comments + Shares) / Followers × 100\n- Reach Rate: Impressions / Followers × 100\n- Format as percentages with 2 decimal places\n\nContent Analysis Keywords\nWhen analyzing posts, look for and highlight:\n- Industry keywords\n- Company values\n- Product/service mentions\n- Partnership announcements\n- Hiring indicators\n- Growth signals\n\n Final Output Standards\n\nThe final plain text document should be:\n- Professional - Business-ready formatting without markup\n- Comprehensive - All available data included\n- Readable - Clear structure and clean typography\n- Actionable - Useful for business decisions\n- Consistent - Uniform formatting throughout\n- Accessible - Easy to scan and reference in any text editor\n\nThis enhanced prompt ensures your company data is transformed into a polished, professional plain text document suitable for reports, CRM systems, or any text-based application."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -1488,
+        1408
+      ],
+      "id": "2a65a9c3-14e7-412b-ad91-ce4507875264",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use this to get the knowledge base of our company",
+        "pineconeIndex": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "topK": 50,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -1360,
+        1616
+      ],
+      "id": "73dd121a-5369-4126-b39a-4dd41b682d4b",
+      "name": "Pinecone Vector Store"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1088,
+        1728
+      ],
+      "id": "10fbb55f-ae24-491c-a44e-799f69daac47",
+      "name": "Embeddings OpenAI"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1xFZHGAq0m-ZbmvvFRAsR9giPrT5_NYthMUaHHMcvMjE",
+          "mode": "list",
+          "cachedResultName": "Advance AI BDR",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xFZHGAq0m-ZbmvvFRAsR9giPrT5_NYthMUaHHMcvMjE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 852572279,
+          "mode": "list",
+          "cachedResultName": "Linkedin Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xFZHGAq0m-ZbmvvFRAsR9giPrT5_NYthMUaHHMcvMjE/edit#gid=852572279"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Inmail Sent": "Yes",
+            "Message Sent?": "Yes",
+            "Timestamp": "={{ $now.format('dd-MM-yyyy') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "LinkedIn URL",
+              "displayName": "LinkedIn URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Provider ID",
+              "displayName": "Provider ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Message Sent?",
+              "displayName": "Message Sent?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Inmail Sent",
+              "displayName": "Inmail Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2000,
+        80
+      ],
+      "id": "aa0ee58d-cc96-4795-8f76-616b0783a2c4",
+      "name": "Append row in sheet"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1xFZHGAq0m-ZbmvvFRAsR9giPrT5_NYthMUaHHMcvMjE",
+          "mode": "list",
+          "cachedResultName": "Advance AI BDR",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xFZHGAq0m-ZbmvvFRAsR9giPrT5_NYthMUaHHMcvMjE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 852572279,
+          "mode": "list",
+          "cachedResultName": "Linkedin Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xFZHGAq0m-ZbmvvFRAsR9giPrT5_NYthMUaHHMcvMjE/edit#gid=852572279"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Connection Request Sent": "Yes"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "LinkedIn URL",
+              "displayName": "LinkedIn URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Provider ID",
+              "displayName": "Provider ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Message Sent?",
+              "displayName": "Message Sent?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Inmail Sent",
+              "displayName": "Inmail Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Connection Request Sent",
+              "displayName": "Connection Request Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2208,
+        256
+      ],
+      "id": "e2344dea-4b05-4bcf-8f09-559823e58877",
+      "name": "Append row in sheet1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1xFZHGAq0m-ZbmvvFRAsR9giPrT5_NYthMUaHHMcvMjE",
+          "mode": "list",
+          "cachedResultName": "Advance AI BDR",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xFZHGAq0m-ZbmvvFRAsR9giPrT5_NYthMUaHHMcvMjE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 852572279,
+          "mode": "list",
+          "cachedResultName": "Linkedin Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xFZHGAq0m-ZbmvvFRAsR9giPrT5_NYthMUaHHMcvMjE/edit#gid=852572279"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Connection Request Sent": "No"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "LinkedIn URL",
+              "displayName": "LinkedIn URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Provider ID",
+              "displayName": "Provider ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Message Sent?",
+              "displayName": "Message Sent?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Inmail Sent",
+              "displayName": "Inmail Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Connection Request Sent",
+              "displayName": "Connection Request Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2208,
+        496
+      ],
+      "id": "e55bace6-f9f4-4101-a7a0-f9cffcd4d55a",
+      "name": "Append row in sheet2"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "",
+          "__regex": "https://app.slack.com/client/.*/([a-zA-Z0-9]{2,})"
+        },
+        "text": "No linkedin account connected in Unipile",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1488,
+        416
+      ],
+      "id": "06421606-2faf-41a6-91df-22aa7647f308",
+      "name": "Send a message",
+      "webhookId": "f99ed3ab-6734-4faf-bc30-97ffae918f06"
+    },
+    {
+      "parameters": {
+        "content": "### Send enriched leads to this webhook after scraping from the database.",
+        "height": 220,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -5936,
+        1488
+      ],
+      "id": "9753a1da-6f84-4ef4-a284-53b964307a8e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Use a form node or capture leads via ads/custom form, then send them here using an HTTP request.",
+        "height": 220,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -5936,
+        1136
+      ],
+      "id": "261d66fd-3a80-497a-8a74-1d434463f1e8",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=research data- research data - {{ $('parsed_data').item }}",
+        "options": {
+          "systemMessage": "=You are an advanced AI sales assistant that generates highly personalized outbound call scripts to convert leads into meetings or further engagement.\n\nYou always receive two inputs before generating the script:\n1. [RESEARCH_DATA] – Personalized information about the lead or their company (e.g., title, company size, tech stack, industry, funding, location, recent activity).\n2. [COMPANY_KNOWLEDGE_BASE] – Internal documentation that contains information about the calling company's offer, positioning, audience, objections, pricing, and more.\n\n---\n\n### 📘 Your Core Task:\n\nGenerate a personalized outbound call script using the context provided.\n\nBefore writing the script, **first check if the following placeholder variables are defined in the [COMPANY_KNOWLEDGE_BASE]**. If any are not available, raise a flag or request that the missing info be provided.\n\n---\n\n### 🔧 Placeholder Variables (Check in [COMPANY_KNOWLEDGE_BASE]):\n\n- `{{company_name}}` → The name of the company making the call  \n- `{{product_name}}` → The product or service being pitched  \n- `{{core_offer}}` → The main transformation or benefit delivered  \n- `{{target_role}}` → The job title or persona being targeted  \n- `{{pain_points}}` → Common problems your product solves  \n- `{{call_to_action}}` → The desired outcome of the call (e.g., book meeting, reply via SMS)  \n- `{{qualification_criteria}}` → Questions or traits used to qualify leads (e.g., team size, revenue)  \n- `{{pricing_model}}` → Optional — summary of how pricing works (if publicly shareable)  \n- `{{faq_and_answers}}` → Top objections leads raise and best-practice responses\n\nYou must extract these from [COMPANY_KNOWLEDGE_BASE] or fall back to asking for them explicitly.\n\n---\n\n### 🎯 Instructions for Script Generation:\n\n1. **Start with a personalized opening** using [RESEARCH_DATA] (e.g., mention lead’s company, role, or industry).\n2. Use tone: warm, human, curious — not robotic. Include pauses (`[pause]`), filler phrases, and empathy.\n3. Integrate {{core_offer}}, {{pain_points}}, and {{target_role}} naturally into the pitch.\n4. Include 1–2 light **qualification questions** using {{qualification_criteria}}.\n5. Prepare at least 2 responses to likely objections from {{faq_and_answers}}.\n6. End with a **strong and simple CTA**, based on {{call_to_action}}.\n7. Also provide fallback versions for voicemail and for “not interested” or “busy” cases.\n\n---\n\n### ✅ Output Format:\n\n**Opening Line**  \n[Personalized intro using lead’s name/company/title. Make it sound natural and confident.]\n\n**Value Hook**  \n[Introduce yourself, mention {{product_name}}, and communicate the core benefit {{core_offer}}]\n\n**Qualification**  \n[Ask a light question based on {{qualification_criteria}}. Use curiosity, not interrogation.]\n\n**Objection Handling**  \n[Write pre-scripted responses using {{faq_and_answers}}]\n\n**Call to Action**  \n[Use {{call_to_action}} — e.g., book a meeting, send a link, transfer to closer, or follow up later]\n\n**Voicemail Version**  \n[A 20–25 second version with personalization + hook + CTA]\n\n---\n\n### 🧪 Example Call Flow (Dynamic Template):\n\n“Hey {{lead_first_name}}, this is {{AI_name}} from {{company_name}} —  \nI know I’m catching you out of the blue, but I saw you're the {{lead_title}} over at {{lead_company}}, and I thought I'd share something that’s helped other {{target_role}}s in {{lead_industry}}.”\n\n[pause]\n\n“We help companies {{core_offer}}, especially when they’re frustrated with {{pain_points}} or looking to streamline it.”\n\n[pause]\n\n“Out of curiosity — how are you handling this currently? Is it in-house or outsourced?”\n\n[pause]\n\n[If objection: use {{faq_and_answers}} response]\n\n“Got it — if it’s cool, I’ll drop a quick link for a quick chat or even transfer you now. What’s easier?”\n\n---\n\nThis system is designed to build real rapport and generate qualified sales calls at scale. Always ensure each variable is available in [COMPANY_KNOWLEDGE_BASE] before execution.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        960,
+        1696
+      ],
+      "id": "bc45687b-9fd9-4d99-a0c1-9135b82e2fd2",
+      "name": "call prompt generation"
+    },
+    {
+      "parameters": {
+        "content": "This is a demo Call Script creator agent, modify this based on your company data to get the best results",
+        "height": 300,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        848,
+        1616
+      ],
+      "id": "4f245e52-1b0f-441d-8d3f-aedc26bb9b52",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C08SJ5USPCK",
+          "mode": "list",
+          "cachedResultName": "YOUR_SLACK_CHANNEL"
+        },
+        "text": "=The Email Address filled by {{ $('Prepare Lead Data').item.json['Name'] }} was incorrect.",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -4880,
+        1792
+      ],
+      "id": "d486ac16-7c4d-4675-ad64-95d37478b931",
+      "name": "Send a message1",
+      "webhookId": "b97acf00-16a8-4ddc-8320-0e8e2f6d831b"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1ac46a14-d521-498b-9da1-18d12899108f",
+              "leftValue": "={{ $json[\"Linkedin Url\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -4736,
+        1040
+      ],
+      "id": "b6fcde7c-6e15-424f-906c-c3cb2fa08b34",
+      "name": "If2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -4208,
+        768
+      ],
+      "id": "524eec63-21ca-400b-91c0-2997a65d73e8",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d258efda-85fa-46b1-bb79-578c2ca451ce",
+              "leftValue": "={{ $json.X }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -4352,
+        1760
+      ],
+      "id": "e31cf7fc-2d83-4a02-a374-9d4e03131eb3",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/apidojo~tweet-scraper/run-sync-get-dataset-items",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "token",
+              "value": "(YOUR APIFY TOKEN)"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"customMapFunction\": \"(object) => { return {...object} }\",\n    \"includeSearchTerms\": false,\n    \"maxItems\": 50,\n    \"minimumFavorites\": 5,\n    \"minimumReplies\": 5,\n    \"minimumRetweets\": 5,\n    \"onlyImage\": false,\n    \"onlyQuote\": false,\n    \"onlyTwitterBlue\": false,\n    \"onlyVerifiedUsers\": false,\n    \"onlyVideo\": false,\n    \"sort\": \"Top\",\n    \"startUrls\": [\n        \"{{ $json.X }}\"\n    ],\n    \"tweetLanguage\": \"en\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -4096,
+        1728
+      ],
+      "id": "7e59c759-5d74-46bd-bc22-560e189e9098",
+      "name": "tweet research"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=All tweets - {{ $('tweet research').item.output }}",
+        "options": {
+          "systemMessage": "=You are a lead research analyst working for an AI sales automation company.\n\nYour role is to analyze the given lead's recent 50 tweets and extract 5–6 **personalization-ready data points** that can help create a highly relevant and personalized outreach message. The final goal is to increase reply rate and booking rate by showing the lead that we understand their situation, goals, and pain points deeply.\n\n## Input You'll Receive:\n\n- A Twitter handle with 50 recent tweets from that handle.\n- A knowledge base of our company (context: the solutions we offer, types of problems we solve, and target customers).\n- Optional metadata such as lead's role, company name, or industry.\n\n## Your Job:\n\n1. Carefully analyze the lead’s tweets to understand their tone, interests, business struggles, product mentions, hiring signals, feature complaints, or trends they follow.\n2. Based on these tweets, extract **insightful patterns or pain points**. Pay attention to:\n    - Complaints or frustrations\n    - What tools or systems they talk about (positively or negatively)\n    - Signals of growth, hiring, or process issues\n    - Comments on competitors, market trends, or automation\n    - Engagement with other thought leaders or tools\n3. Cross-reference these findings with our company knowledge base to **identify alignment or gaps**.\n4. Based on this, generate **5–6 personalized data points** that we can use in an email or DM. Each data point should:\n    - Be based on something they tweeted or clearly care about\n    - Be relevant to the solution we offer\n    - Be specific, not generic\n    - Not repeat the tweet verbatim, but extract meaning from it\n\n## Output Format:\n\nReturn a clean JSON with:\n\n```json\n{\n  \"twitter_handle\": \"<@handle>\",\n  \"data_points\": [\n    {\n      \"insight\": \"<What did they tweet or signal?>\",\n      \"personalization_angle\": \"<How can we use this to hook into our solution or offer value?>\"\n    },\n    ...\n  ]\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -3712,
+        1728
+      ],
+      "id": "65118577-9a4f-45e9-a6f4-272261073fc5",
+      "name": "extract web info1"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use this to get the knowledge base of our company",
+        "pineconeIndex": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "topK": 30,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -3456,
+        1936
+      ],
+      "id": "5d07c221-22e1-48a4-ae3e-0ccaeb6d5b73",
+      "name": "Pinecone Vector Store3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -3200,
+        2048
+      ],
+      "id": "5119aee8-78d0-435e-be98-a887a6c93ebb",
+      "name": "Embeddings OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -3872,
+        1520
+      ],
+      "id": "6fcab57b-f6c5-4396-b65c-ab2055d5107a",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -3680,
+        1952
+      ],
+      "id": "8f2c00fe-b169-4eab-b790-88737c7ea441",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1584,
+        1616
+      ],
+      "id": "656d52b3-415c-4705-b75d-4a974c70999b",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1184,
+        1232
+      ],
+      "id": "a7340884-e1ed-4870-84d7-ad6a6de23440",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        816,
+        1984
+      ],
+      "id": "fd86d50d-bfd2-4a01-9630-5a80b8149bde",
+      "name": "OpenAI Chat Model4",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "get linkedin account id": [
+      {
+        "json": {
+          "object": "AccountList",
+          "items": [
+            {
+              "object": "Account",
+              "connection_params": {
+                "im": {
+                  "id": "ACoAAEAC_sYBOJGYdn2QZE22BZmIwrQ1SORbnDM",
+                  "publicIdentifier": "your-profile",
+                  "username": "YOUR_NAME",
+                  "premiumId": null,
+                  "premiumFeatures": [],
+                  "premiumContractId": null,
+                  "organizations": [
+                    {
+                      "name": "YOUR_COMPANY_NAME",
+                      "messaging_enabled": true,
+                      "mailbox_urn": "urn:li:fsd_pageMailbox:77854149",
+                      "organization_urn": "urn:li:fsd_company:105882039"
+                    },
+                    {
+                      "name": "Avelos",
+                      "messaging_enabled": true,
+                      "mailbox_urn": "urn:li:fsd_pageMailbox:66683719",
+                      "organization_urn": "urn:li:fsd_company:99159567"
+                    }
+                  ]
+                }
+              },
+              "name": "YOUR_NAME",
+              "type": "LINKEDIN",
+              "created_at": "2025-06-22T19:55:28.982Z",
+              "sources": [
+                {
+                  "id": "2L5agsvyQaCXdaiUlMZTGw_MESSAGING",
+                  "status": "OK"
+                }
+              ],
+              "id": "2L5agsvyQaCXdaiUlMZTGw",
+              "groups": []
+            }
+          ],
+          "cursor": null
+        }
+      }
+    ]
+  },
+  "connections": {
+    "send call -  opener 1": {
+      "main": [
+        [
+          {
+            "node": "add row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "add row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send call -  opener 2": {
+      "main": [
+        [
+          {
+            "node": "add row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "add row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send call -  opener 3": {
+      "main": [
+        [
+          {
+            "node": "add row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "add row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "decide opener": {
+      "main": [
+        [
+          {
+            "node": "send call -  opener 1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "send call -  opener 2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "send call -  opener 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "email body": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "email body",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Verification": {
+      "main": [
+        [
+          {
+            "node": "Email Validation Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Validation Check": {
+      "main": [
+        [
+          {
+            "node": "web research1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          },
+          {
+            "node": "LinkedIn Company Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Company Data Scraping": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LinkedIn Company Data": {
+      "main": [
+        [
+          {
+            "node": "linkedin research1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code5": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "web research1": {
+      "main": [
+        [
+          {
+            "node": "extract web info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "linkedin research1": {
+      "main": [
+        [
+          {
+            "node": "linkedin post info",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "linkedin post info": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract web info": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code6": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead Capture Form": {
+      "main": [
+        [
+          {
+            "node": "Prepare Lead Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code8": {
+      "main": [
+        [
+          {
+            "node": "decide opener",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets10": {
+      "main": [
+        [
+          {
+            "node": "call prompt generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Lead Data": {
+      "main": [
+        [
+          {
+            "node": "Email Verification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parsed_data": {
+      "main": [
+        [
+          {
+            "node": "Code6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "email body",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets10",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "email body",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Trigger Outreac Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get linkedin account id": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send connectiong req": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "try INMAIL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "try INMAIL": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "send connectiong req",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store2": {
+      "ai_tool": [
+        [
+          {
+            "node": "call prompt generation",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI3": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Outreac Assistant": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare Lead Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "get linkedin account id",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "parsed_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "call prompt generation": {
+      "main": [
+        [
+          {
+            "node": "Code8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Company Data Scraping",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "tweet research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tweet research": {
+      "main": [
+        [
+          {
+            "node": "extract web info1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract web info1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store3",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store3": {
+      "ai_tool": [
+        [
+          {
+            "node": "extract web info1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "extract web info",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "extract web info1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "email body",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "call prompt generation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "235d0963-12ae-440c-a9cc-8f45d20d6048",
+  "meta": {
+    "instanceId": "1f9b134c3525ad50a35177621a05ade8c403caae1fa8ec11e75753428fe762ed"
+  },
+  "id": "hEwYQBNaoxBreErU",
+  "tags": [
+    {
+      "createdAt": "2025-08-12T15:26:31.253Z",
+      "updatedAt": "2025-08-12T15:26:31.253Z",
+      "id": "e8xIFJHmAYmQZFWg",
+      "name": "SDR"
+    }
+  ]
+}

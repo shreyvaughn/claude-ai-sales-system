@@ -1,0 +1,1062 @@
+{
+  "name": "Pre-Call Follow up(SMS)",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "booking-created",
+              "leftValue": "={{ $json.body.triggerEvent }}",
+              "rightValue": "BOOKING_CREATED",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "22c4708e-ed8f-40be-94b9-74ef456997f1",
+      "name": "Filter Booking Created",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -4180,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "extract-booking-data",
+              "name": "bookingData",
+              "value": "={\n  \"bookingId\": \"{{ $json.body.payload.bookingId }}\",\n  \"uid\": \"{{ $json.body.payload.uid }}\",\n  \"title\": \"{{ $json.body.payload.title }}\",\n  \"eventTitle\": \"{{ $json.body.payload.eventTitle }}\",\n  \"startTime\": \"{{ $json.body.payload.startTime }}\",\n  \"endTime\": \"{{ $json.body.payload.endTime }}\",\n  \"attendeeName\": \"{{ $json.body.payload.attendees[0].name }}\",\n  \"attendeeEmail\": \"{{ $json.body.payload.attendees[0].email }}\",\n  \"attendeePhone\": \"{{ $json.body.payload.responses['Phone-Number'].value }}\",\n  \"attendeeTimeZone\": \"{{ $json.body.payload.attendees[0].timeZone }}\",\n  \"organizerName\": \"{{ $json.body.payload.organizer.name }}\",\n  \"organizerEmail\": \"{{ $json.body.payload.organizer.email }}\",\n  \"location\": \"{{ $json.body.payload.location }}\",\n  \"meetingUrl\": \"{{ $json.body.payload.metadata.videoCallUrl }}\",\n  \"bookingTime\": \"{{ $json.body.createdAt }}\",\n\"daysUntilAppointment\": \"{{ Math.ceil(($json.body.payload.startTime.toDate() - $now) / (1000 * 60 * 60 * 24)) }}\",\n\"hoursUntilAppointment\": \"{{ Math.ceil(($json.body.payload.startTime.toDate() - $now) / (1000 * 60 * 60)) }}\",\n  \"triggerEvent\": \"{{ $json.body.triggerEvent }}\",\n  \"status\": \"{{ $json.body.payload.status }}\",\n  \"length\": \"{{ $json.body.payload.length }}\",\n  \"description\": \"{{ $json.body.payload.description }}\",\n  \"additionalNotes\": \"{{ $json.body.payload.additionalNotes }}\"\n}",
+              "type": "object"
+            },
+            {
+              "id": "12065e6e-8d64-4ae7-bf9c-4e9a425d973a",
+              "name": "website",
+              "value": "={{ $json.body.payload.responses.title.value }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7e3f89bc-2857-4be2-aead-60d924e50e1c",
+      "name": "Extract Booking Info",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3900,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "check-days-until",
+              "leftValue": "={{ $json.bookingData.daysUntilAppointment.toNumber() }}",
+              "rightValue": 7,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9439dd8a-0fa4-46cc-9d55-113ad0932546",
+      "name": "7+ Days Route",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -3020,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "check-4-6-days",
+              "leftValue": "={{ $json.bookingData.daysUntilAppointment.toNumber() }}",
+              "rightValue": 4,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "check-less-7-days",
+              "leftValue": "={{ $json.bookingData.daysUntilAppointment.toNumber() }}",
+              "rightValue": 7,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "750957a3-ea81-40d1-871d-1b50379745ad",
+      "name": "4-6 Days Route",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -3020,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "check-2-3-days",
+              "leftValue": "={{ $json.bookingData.daysUntilAppointment.toNumber() }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "check-less-4-days",
+              "leftValue": "={{ $json.bookingData.daysUntilAppointment.toNumber() }}",
+              "rightValue": 4,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5e102ae2-a8fc-438f-9d3e-c0c049247592",
+      "name": "2-3 Days Route",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -3020,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "check-same-day",
+              "leftValue": "={{ $json.bookingData.daysUntilAppointment.toNumber() }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "37c3253d-68b6-4623-9016-5029c72c026f",
+      "name": "Same Day/24h Route",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -3020,
+        660
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.contiguity.co/send/text",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "to",
+              "value": "={{ $json.bookingData.attendeePhone }}"
+            },
+            {
+              "name": "message",
+              "value": "=Hey {{ $json.bookingData.attendeeName }}, this is {{ $('Extract Booking Info').item.json.bookingData.organizerName }}, your appointment is confirmed for {{ $json.bookingData.startTime.toDateTime().toFormat('MMM dd, yyyy') }} at {{ $json.bookingData.startTime.toDateTime().toFormat('h:mm a') }} {{ $json.timeZoneAbbr }}. We've reserved this exclusive slot for you. Looking forward to our call!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "137097f5-5a31-4687-bd95-1f4c0c918242",
+      "name": "Send Immediate Confirmation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2720,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "days"
+      },
+      "id": "87044feb-6fed-419e-b032-a4ec29cb4185",
+      "name": "Wait 1 Day",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1140,
+        0
+      ],
+      "webhookId": "48e82371-c75e-4103-af02-6fb3ad42a9d8"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.contiguity.co/send/text",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "to",
+              "value": "={{ $json.bookingData.attendeePhone }}"
+            },
+            {
+              "name": "message",
+              "value": "=Hey {{ $json.bookingData.attendeeName }}, it's {{ $('Extract Booking Info').item.json.bookingData.organizerName }}, I have your appointment slot reserved for {{ $json.bookingData.startTime.toDateTime().toFormat('MMM dd, yyyy') }} at {{ $json.bookingData.startTime.toDateTime().toFormat('h:mm a') }} {{ $json.timeZoneAbbr }}. Just need a quick confirmation—reply YES if we’re good to go"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "707f926b-24c5-436c-9bef-b850582a500b",
+      "name": "Send 1-Day Reminder",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -880,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 12,
+        "unit": "hours"
+      },
+      "id": "45bb4f3d-19f9-4891-aecf-57c635451f9b",
+      "name": "Wait 12 Hours",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -540,
+        560
+      ],
+      "webhookId": "f8076fdf-3771-4ce5-ac99-f0bd95f930c2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.contiguity.co/send/text",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "to",
+              "value": "={{ $json.bookingData.attendeePhone }}"
+            },
+            {
+              "name": "message",
+              "value": "=Hey {{ $json.bookingData.attendeeName }}, your appointment is in at {{ $json.bookingData.startTime.toDateTime().toFormat('h:mm a') }} {{ $json.timeZoneAbbr }}. I am ready for our call! "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3c1e9875-b1e6-4fce-8152-b986ebe8654f",
+      "name": "Send 12-Hour Reminder",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -340,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 11,
+        "unit": "hours"
+      },
+      "id": "5cd18a93-85dd-45f7-b012-eb87d5e5dde2",
+      "name": "Wait 11 Hours",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -140,
+        560
+      ],
+      "webhookId": "e933350a-1465-474f-b906-0004488dc3af"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.contiguity.co/send/text",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "to",
+              "value": "={{ $json.bookingData.attendeePhone }}"
+            },
+            {
+              "name": "message",
+              "value": "=Hey {{ $json.bookingData.attendeeName }}, our appointment is starting in 1 hour. See you at {{ $json.bookingData.startTime.toDateTime().toFormat('h:mm a') }} {{ $json.timeZoneAbbr }}!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "24ee0afc-d668-412c-bf5e-4eb485bb4d14",
+      "name": "Send 1-Hour Final Reminder",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        60,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "days"
+      },
+      "id": "c09a110c-b34d-474a-a81a-ffd2dbb04eec",
+      "name": "Wait 3 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -2520,
+        120
+      ],
+      "webhookId": "a5ebb251-75ef-4fc1-baa3-b3a7c1a6c769"
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "days"
+      },
+      "id": "a2dc06a6-6cca-4db6-8464-4a7dee31b216",
+      "name": "Wait 2 More Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1580,
+        -60
+      ],
+      "webhookId": "e17c04f0-0f08-4f82-802b-7f8d2c4526c1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.contiguity.co/send/text",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "to",
+              "value": "={{ $json.bookingData.attendeePhone }}"
+            },
+            {
+              "name": "message",
+              "value": "=Hi {{ $json.bookingData.attendeeName }}, this is a friendly reminder about your appointment on {{ $json.bookingData.startTime.toDateTime().toFormat('MMM dd, yyyy') }} {{ $json.timeZoneAbbr }} at {{ $json.bookingData.startTime.toDateTime().toFormat('h:mm a') }}. We have your slot secured and ready."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cd196323-43b0-4091-88aa-b55f29ad45c0",
+      "name": "Send 4th Day Reminder",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1800,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.contiguity.co/send/text",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "to",
+              "value": "={{ $json.bookingData.attendeePhone }}"
+            },
+            {
+              "name": "message",
+              "value": "=Hi {{ $json.bookingData.attendeeName }}, gentle reminder about your upcoming appointment on {{ $json.bookingData.startTime.toDateTime().toFormat('MMM dd, yyyy') }} at {{ $json.bookingData.startTime.toDateTime().toFormat('h:mm a') }} {{ $json.timeZoneAbbr }}. We're looking forward to connecting with you."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "03dff0f4-759b-4723-914a-20e121a015c1",
+      "name": "Send 2nd-Day Confirmation Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1340,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cal-sms-reminder",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -4460,
+        340
+      ],
+      "id": "f5ad3c7c-13aa-452a-9029-39f816d33e61",
+      "name": "Webhook",
+      "webhookId": "7ff8c6af-d0bf-4a1b-963a-213ece554fd7"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the booking data from the previous node\nconst bookingData = $input.first().json.bookingData;\n\n// Extract start time and attendee timezone\nconst startTime = new Date(bookingData.startTime);\nconst attendeeTimeZone = bookingData.attendeeTimeZone;\nconst currentTime = new Date();\n\n// Calculate the difference in milliseconds\nconst timeDifference = startTime.getTime() - currentTime.getTime();\nconst daysUntilAppointment = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));\nconst hoursUntilAppointment = Math.ceil(timeDifference / (1000 * 60 * 60));\n\n// Format date and time in attendee's timezone\nconst appointmentDate = startTime.toLocaleDateString('en-US', {\n  weekday: 'long',\n  year: 'numeric',\n  month: 'long',\n  day: 'numeric',\n  timeZone: attendeeTimeZone\n});\n\nconst appointmentTime = startTime.toLocaleTimeString('en-US', {\n  hour: 'numeric',\n  minute: '2-digit',\n  hour12: true,\n  timeZone: attendeeTimeZone\n});\n\n// Get timezone abbreviation for display\nconst timeZoneAbbr = startTime.toLocaleTimeString('en-US', {\n  timeZoneName: 'short',\n  timeZone: attendeeTimeZone\n}).split(' ').slice(-1)[0];\n\n// Determine reminder path\nlet reminderPath;\nif (daysUntilAppointment >= 7) {\n  reminderPath = \"7_plus_days\";\n} else if (daysUntilAppointment >= 4 && daysUntilAppointment < 7) {\n  reminderPath = \"4_to_6_days\";\n} else if (daysUntilAppointment >= 2 && daysUntilAppointment < 4) {\n  reminderPath = \"2_to_3_days\";\n} else {\n  reminderPath = \"same_day_24h\";\n}\n\n// Return enhanced data\nreturn [{\n  json: {\n    bookingData: bookingData,\n    daysUntilAppointment: daysUntilAppointment,\n    hoursUntilAppointment: hoursUntilAppointment,\n    reminderPath: reminderPath,\n    formattedDate: appointmentDate,\n    formattedTime: appointmentTime,\n    timeZoneAbbr: timeZoneAbbr,\n    formattedDateTime: `${appointmentDate} at ${appointmentTime} ${timeZoneAbbr}`\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3620,
+        340
+      ],
+      "id": "e05d712a-899f-48c6-b13b-4d279c712c51",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "days"
+      },
+      "id": "8b412150-76c1-468a-98b4-a0739ce10b10",
+      "name": "Wait 1 Day1",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -2200,
+        360
+      ],
+      "webhookId": "48e82371-c75e-4103-af02-6fb3ad42a9d8"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.contiguity.co/send/text",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "to",
+              "value": "={{ $json.bookingData.attendeePhone }}"
+            },
+            {
+              "name": "message",
+              "value": "=Hey {{ $json.bookingData.attendeeName }}, your appointment is confirmed for {{ $json.bookingData.startTime.toDateTime().toFormat('MMM dd, yyyy') }} at {{ $json.bookingData.startTime.toDateTime().toFormat('h:mm a') }} {{ $json.timeZoneAbbr }}. We've reserved this exclusive slot for you. Looking forward to our call!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0f01b87f-2996-4778-bed0-839b6952880b",
+      "name": "Send 2nd-Day Confirmation Request1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2400,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the booking data from the input\nconst data = $input.first().json;\n\n// Get the appointment start time\nconst startTime = new Date(data.startTime);\nconst currentTime = new Date();\n\n// Calculate the difference in milliseconds\nconst timeDifference = startTime.getTime() - currentTime.getTime();\n\n// Convert to days (rounded down to get exact days)\nconst daysUntilAppointment = Math.floor(timeDifference / (1000 * 60 * 60 * 24));\n\n// Calculate hours for more precise checking\nconst hoursUntilAppointment = Math.floor(timeDifference / (1000 * 60 * 60));\n\nconsole.log(`Current check: ${daysUntilAppointment} days, ${hoursUntilAppointment} hours until appointment`);\n\n// Check if it's time to send the 24-hour (1 day before) reminder\n// We'll trigger when it's between 20-28 hours before (to account for timing variations)\nconst shouldSendReminder = hoursUntilAppointment <= 28 && hoursUntilAppointment >= 20;\n\n// Return the data with routing information\nreturn [{\n  json: {\n    ...data,\n    currentDaysUntil: daysUntilAppointment,\n    currentHoursUntil: hoursUntilAppointment,\n    shouldSendReminder: shouldSendReminder,\n    shouldLoop: !shouldSendReminder,\n    checkTime: currentTime.toISOString(),\n    nextAction: shouldSendReminder ? \"send_24h_reminder\" : \"wait_and_loop\"\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1880,
+        360
+      ],
+      "id": "86ad4650-3f1f-4674-803c-d010e21c8b8a",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8169e5b7-512c-40f2-bc86-fea8de97e3e2",
+              "leftValue": "={{ $json.nextAction }}",
+              "rightValue": "=send_24h_reminder",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1660,
+        360
+      ],
+      "id": "7f5576e7-4212-45ff-ba2d-03ab10431f87",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "days"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1440,
+        640
+      ],
+      "id": "a5035562-ef17-4d13-aa13-d1fcb2339444",
+      "name": "Wait 1 day",
+      "webhookId": "11a4eef6-f42e-435b-be2c-ec5ffb453af5"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the booking data from the input\nconst data = $input.first().json;\n\n// Get the appointment start time\nconst startTime = new Date(data.startTime);\nconst currentTime = new Date();\n\n// Calculate the difference in milliseconds\nconst timeDifference = startTime.getTime() - currentTime.getTime();\n\n// Convert to days (exact float) and rounded down\nconst daysUntilAppointment = Math.floor(timeDifference / (1000 * 60 * 60 * 24));\nconst exactDays = timeDifference / (1000 * 60 * 60 * 24);\n\n// Check if it's time to send the 4-day reminder\n// Optional buffer: between 3.6 and 4.4 days (to account for timing drifts)\nconst shouldSendReminder = exactDays >= 3.6 && exactDays <= 4.4;\n\n// Return the data with routing information\nreturn [{\n  json: {\n    ...data,\n    currentDaysUntil: daysUntilAppointment,\n    exactDaysUntil: exactDays.toFixed(2),\n    shouldSendReminder: shouldSendReminder,\n    shouldLoop: !shouldSendReminder,\n    checkTime: currentTime.toISOString(),\n    nextAction: shouldSendReminder ? \"send_4d_reminder\" : \"wait_and_loop\"\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2260,
+        0
+      ],
+      "id": "6d57cbba-d593-4933-a77a-0f17037128c4",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8169e5b7-512c-40f2-bc86-fea8de97e3e2",
+              "leftValue": "={{ $json.nextAction }}",
+              "rightValue": "=send_4d_reminder",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2040,
+        -60
+      ],
+      "id": "da4ddc60-4398-4435-9abf-3cd614cfb1b8",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "days"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1720,
+        120
+      ],
+      "id": "a4d72767-26b9-404d-a28d-b452a9dbf230",
+      "name": "Wait",
+      "webhookId": "3e98f0a4-1e10-4ecf-bc06-721cd7ad4d73"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Filter Booking Created": {
+      "main": [
+        [
+          {
+            "node": "Extract Booking Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Booking Info": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7+ Days Route": {
+      "main": [
+        [
+          {
+            "node": "Send Immediate Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4-6 Days Route": {
+      "main": [
+        [
+          {
+            "node": "Send 2nd-Day Confirmation Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2-3 Days Route": {
+      "main": [
+        [
+          {
+            "node": "Send 2nd-Day Confirmation Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Same Day/24h Route": {
+      "main": [
+        [
+          {
+            "node": "Send 1-Day Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Immediate Confirmation": {
+      "main": [
+        [
+          {
+            "node": "Wait 3 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1 Day": {
+      "main": [
+        [
+          {
+            "node": "Send 1-Day Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send 1-Day Reminder": {
+      "main": [
+        [
+          {
+            "node": "Wait 12 Hours",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 12 Hours": {
+      "main": [
+        [
+          {
+            "node": "Send 12-Hour Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send 12-Hour Reminder": {
+      "main": [
+        [
+          {
+            "node": "Wait 11 Hours",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 11 Hours": {
+      "main": [
+        [
+          {
+            "node": "Send 1-Hour Final Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 3 Days": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 More Days": {
+      "main": [
+        [
+          {
+            "node": "Send 2nd-Day Confirmation Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send 4th Day Reminder": {
+      "main": [
+        [
+          {
+            "node": "Wait 2 More Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send 2nd-Day Confirmation Request": {
+      "main": [
+        [
+          {
+            "node": "Wait 1 Day",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Filter Booking Created",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "2-3 Days Route",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Same Day/24h Route",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "4-6 Days Route",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "7+ Days Route",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1 Day1": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send 2nd-Day Confirmation Request1": {
+      "main": [
+        [
+          {
+            "node": "Wait 1 Day1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send 1-Day Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 1 day",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1 day": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Send 4th Day Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0f30084a-ebb4-4492-bbe6-70593bb14e84",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a810fa5950548434aba1002ee94e6b74da80f893e003dacd22d1ee3030eea57f"
+  },
+  "id": "aCF02oXEqNDyaZdH",
+  "tags": []
+}

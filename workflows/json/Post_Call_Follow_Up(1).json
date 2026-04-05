@@ -1,0 +1,736 @@
+{
+  "name": "Post_Call_Follow_Up",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "229f8bf3-d245-4dbf-8ed5-b1d5f49112ad",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2720,
+        160
+      ],
+      "id": "3278f2b2-c228-41b5-bbf6-64c7702e3237",
+      "name": "Webhook",
+      "webhookId": "229f8bf3-d245-4dbf-8ed5-b1d5f49112ad"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a Sales Assistant AI, an expert in crafting highly personalized, friendly, and compelling sales follow-up emails. Your primary goal is to nudge prospects toward a decision by reinforcing value, providing social proof, and addressing their specific needs or interests identified during a recent sales call. You write in the voice of a human sales representative, specifically {{CLOSER_NAME}}. Your emails must be clever, insightful, confident — and never sound desperate.\n\n---\n\n**INPUT DATA YOU RECEIVE:**\n\n1. **Lead Information:**\n    - `LEAD_NAME`: The full name of the prospect.\n    - `LEAD_EMAIL`: The prospect's email address.\n    - `LEAD_COMPANY_NAME`: The name of the company the prospect represents.\n    - `NEXT_APPOINTMENT_DATE`: The date and time of the next scheduled meeting (ISO format).\n    - `SALES_CLOSER_NAME`: The name of the human rep who led the sales call.\n\n2. **Conversation Context:**\n    - `FULL_CONVERSATION_TRANSCRIPT`: A string containing all pre-call notes, the full transcript of the recent sales call, and any CRM notes. Use this to understand the prospect's pain points, interests, objections, goals, and general vibe. Read carefully and extract what matters.\n\n3. **Selected Email Types:**\n    - `SELECTED_EMAIL_TYPES_ARRAY`: A list of email types to generate (e.g., `[\"Case Study\", \"Call Recording\", \"Product Demo\", \"Feature Offer\", \"Lead Database\"]`). You must generate one email for each type listed.\n\n---\n\n**AVAILABLE RESOURCE EXAMPLES (Customizable):**\n\nYou can reference these if the selected email types are relevant:\n\n- **Case Studies:** You have access to internal success stories from clients in various industries. Use them to highlight parallels with the prospect’s situation. Write 1–2 sentence success stories with outcome metrics when possible.\n- **Lead Database Tool (optional):** If your product includes lead generation/scraping, offer a test sample or trial access to showcase quality.\n- **Product Demo:** You may include a public or gated link to an interactive product demo if the prospect has seen it or needs to show it internally.\n- **Feature Offers:** You may mention bonus features, limited-time perks, or integrations *only if they weren’t already promised during the call.*\n\n---\n\n**EMAIL FORMATTING RULES:**\n\nEach email must include:\n\n- `emailType`: Matches one of the types from `SELECTED_EMAIL_TYPES_ARRAY`.\n- `subject`: Punchy, clear subject line.\n- `body`: The full email body in **Markdown format**, written by `{{SALES_CLOSER_NAME}}`.\n\n**Email Body Guidelines:**\n\n- **Greeting:** Always start with `Hey {{LEAD_NAME}},`\n- **Relevance First:** Within the first 2 lines, reference a key part of the conversation from `FULL_CONVERSATION_TRANSCRIPT`.\n- **Keep It Tight:** 3–5 lines max. Clear, warm, confident.\n- **CTA:** End with a soft prompt to respond, click, or reflect.\n- **Sign-Off:** Use \"Best,\" \"Cheers,\" or similar — then `{{SALES_CLOSER_NAME}}`.\n\n---\n\n**EXAMPLE OUTPUT FORMAT:**\n\n```json\n[\n    {\n        \"emailType\": \"Case Study\",\n        \"subject\": \"Quick story on how another team solved this...\",\n        \"body\": \"```markdown\\nHey {{LEAD_NAME}},\\n\\nReally appreciated our chat earlier — especially when you brought up {{key pain point from transcript}}. It reminded me of another client in a similar spot who used our platform to {{problem solved}}, and ended up seeing {{quantifiable result}} in just a few weeks.\\n\\nHere’s their full story if you want to skim: {{link or quick summary}}.\\n\\nLet me know if it sparks any ideas.\\n\\nBest,\\n{{SALES_CLOSER_NAME}}\\n```\"\n    },\n    {\n        \"emailType\": \"Product Demo\",\n        \"subject\": \"Here’s that full demo you can share internally\",\n        \"body\": \"```markdown\\nHey {{LEAD_NAME}},\\n\\nAs promised, here’s the walkthrough demo we covered — great for sharing with your team if you’re syncing internally. It shows how easy it is to {{key feature or outcome}} from one place.\\n\\nTake a look: {{demo_link}}\\n\\nHappy to walk through any questions that come up!\\n\\nCheers,\\n{{SALES_CLOSER_NAME}}\\n```\"\n    }\n    // More as per SELECTED_EMAIL_TYPES_ARRAY\n]\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -2016,
+        160
+      ],
+      "id": "2694efa5-65ae-4156-90d6-223c3a50c426",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawText = items[0].json.text || '';\n\n// Remove ```json and ``` from the block\nconst cleaned = rawText\n  .replace(/^```json\\s*/, '')\n  .replace(/```$/, '')\n  .trim();\n\nlet parsedEmails = [];\n\ntry {\n  parsedEmails = JSON.parse(cleaned);\n} catch (error) {\n  throw new Error('Failed to parse JSON from text field: ' + error.message);\n}\n\n// Construct final object with Email1, Email2, ...\nconst allEmails = {};\nparsedEmails.forEach((email, index) => {\n  const key = `Email${index + 1}`;\n  allEmails[key] = email;\n});\n\n// Output with parent key\nreturn [\n  {\n    json: {\n      all_emails: allEmails\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1664,
+        160
+      ],
+      "id": "fbfa95c3-d659-40c9-8475-0e544ddd5ea1",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// === INPUT ===\n// nextMeeting: \"2025-06-28\" or any valid YYYY-MM-DD\n// emails: an object with keys Email1, Email2, etc.\nconst emails = $input.first().json.all_emails;\nconst nextMeetingStr = $('Edit Fields1').first().json[\"Follow Up Date\"]; // e.g. \"2025-06-28\"\n\n// === CONSTANTS ===\nconst WORK_HOUR_START = 9;\nconst WORK_HOUR_END = 18;\nconst NY_OFFSET_HOURS = -4; // New York daylight time (EDT); change to -5 for EST if needed\n\n// === CURRENT TIME (approximate NY time by shifting from UTC) ===\nconst nowUTC = new Date();\nconst now = new Date(nowUTC.getTime() + NY_OFFSET_HOURS * 60 * 60 * 1000);\n\n// === Parse meeting date as 10 AM New York time ===\nconst meetingDate = new Date(`${nextMeetingStr}T10:00:00Z`);\nconst meetingNY = new Date(meetingDate.getTime() + NY_OFFSET_HOURS * 60 * 60 * 1000);\n\n// === Difference in whole days ===\nconst msPerDay = 1000 * 60 * 60 * 24;\nconst daysUntilMeeting = Math.floor((meetingNY - now) / msPerDay);\n\n// === Count emails ===\nconst emailKeys = Object.keys(emails).sort();\nconst numEmails = emailKeys.length;\n\n// === Validation ===\nif (numEmails === 0 || daysUntilMeeting < 1) {\n  return [\n    {\n      json: {\n        message: 'No emails scheduled. Either no emails or not enough time before next meeting.',\n        option: 0,\n        schedule: []\n      }\n    }\n  ];\n}\n\n// === Determine spacing (evenly distribute emails) ===\nconst interval = Math.floor(daysUntilMeeting / numEmails) || 1;\n\nconst schedule = [];\n\nfor (let i = 0; i < emailKeys.length; i++) {\n  const key = emailKeys[i];\n\n  // Base date = now + (i * interval) days\n  const baseDate = new Date(now.getTime() + (i * interval * msPerDay));\n\n  // Random time between 9 AM – 6 PM\n  const randomHour = Math.floor(Math.random() * (WORK_HOUR_END - WORK_HOUR_START + 1)) + WORK_HOUR_START;\n  const randomMinute = Math.floor(Math.random() * 60);\n\n  // Final datetime (in NY time)\n  baseDate.setHours(randomHour);\n  baseDate.setMinutes(randomMinute);\n  baseDate.setSeconds(0);\n  baseDate.setMilliseconds(0);\n\n  const waitMs = baseDate.getTime() - now.getTime();\n  const waitSeconds = Math.floor(waitMs / 1000);\n\n  // Store it (convert back to ISO with NY offset info for logging)\n  schedule.push({\n    emailKey: key,\n    subject: emails[key].subject,\n    sendAt: new Date(baseDate.getTime() - NY_OFFSET_HOURS * 60 * 60 * 1000).toISOString(), // convert back to UTC\n    humanTimeNY: `${baseDate.toDateString()} at ${baseDate.toTimeString().split(' ')[0]} (New York Time)`,\n    waitSecondsFromNow: waitSeconds\n  });\n}\n\n// === Output ===\nreturn [\n  {\n    json: {\n      now: now.toISOString(),\n      nextMeeting: meetingNY.toISOString(),\n      option: numEmails, // 0 if none, 1 if 1 email, 2 if 2, 3 if 3, etc.\n      totalDaysUntilMeeting: daysUntilMeeting,\n      schedule\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1104,
+        160
+      ],
+      "id": "5cb769db-e291-4200-a6c2-353e6f8aa656",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Code3').item.json.option }}",
+                    "rightValue": 3,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "302ad947-6892-41c3-bc38-2883f1c7d23d"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "3 Emails"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "cbad25e6-372b-4d58-8a7a-979f8bbddaaa",
+                    "leftValue": "={{ $('Code3').item.json.option }}",
+                    "rightValue": 2,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "2 Emails"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "133cf2b9-6283-4f0f-9738-6892034c5d53",
+                    "leftValue": "={{ $('Code3').item.json.option }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "1 Email"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -368,
+        160
+      ],
+      "id": "09e734b1-2805-49c7-b4e4-231d6787fd0a",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "amount": "={{ $('Code3').item.json.schedule[1].waitSecondsFromNow }}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "18b1decf-236b-490b-a940-496c1b0ec40e",
+      "name": "Wait4",
+      "webhookId": "c24965f5-5789-4b87-baa8-13c2810f0293"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "46e10e34-b2d6-43bd-811e-e0e9be8b4f05",
+              "name": "Follow Up Date",
+              "value": "={{ $json.body.data.properties[\"2nd Follow Up\"].date.start }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2496,
+        160
+      ],
+      "id": "f95bd33a-770b-4351-b00d-24ad4e51fcbf",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bbd8cd88-2ac2-4c51-98f5-864f7c36b2fa",
+              "name": "all_emails",
+              "value": "={{ $json.all_emails }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1440,
+        160
+      ],
+      "id": "80f7cd86-d91b-4a40-b563-10e672c58d94",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "amount": "={{ $('Code3').item.json.schedule[2].waitSecondsFromNow }}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        464,
+        0
+      ],
+      "id": "1032ff13-1d3f-4412-bd80-b783f5dd0a77",
+      "name": "Wait6",
+      "webhookId": "6f4eeb17-e318-4c2c-8264-4f3a674d2de6"
+    },
+    {
+      "parameters": {
+        "amount": "={{ $('Code3').item.json.schedule[3].waitSecondsFromNow }}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        0
+      ],
+      "id": "420e4437-727d-49cb-a788-186242ac688a",
+      "name": "Wait7",
+      "webhookId": "27110b47-d9c5-4410-9d38-c0e183fccfc3"
+    },
+    {
+      "parameters": {
+        "amount": "={{ $('Code3').item.json.schedule[1].waitSecondsFromNow }}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        240
+      ],
+      "id": "6ffe9b53-40f2-42e0-8e10-995cbad17c94",
+      "name": "Wait5",
+      "webhookId": "c24965f5-5789-4b87-baa8-13c2810f0293"
+    },
+    {
+      "parameters": {
+        "amount": "={{ $('Code3').item.json.schedule[2].waitSecondsFromNow }}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        464,
+        240
+      ],
+      "id": "039b099f-7014-4961-ba7a-2885d280181e",
+      "name": "Wait8",
+      "webhookId": "6f4eeb17-e318-4c2c-8264-4f3a674d2de6"
+    },
+    {
+      "parameters": {
+        "amount": "={{ $('Code3').item.json.schedule[1].waitSecondsFromNow }}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        512
+      ],
+      "id": "14c64920-1f14-4015-9dae-98c88064c7c6",
+      "name": "Wait9",
+      "webhookId": "c24965f5-5789-4b87-baa8-13c2810f0293"
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ '' }}",
+        "toEmail": "={{ $('Webhook').item.json.body.data.properties['Email Address'].email }}",
+        "subject": "={{ $('Code2').item.json.all_emails.Email1.subject }}",
+        "html": "={{ $('Code2').item.json.all_emails.Email1.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -784,
+        160
+      ],
+      "id": "31d4a470-e806-4d3c-b8ad-f08d975b1f86",
+      "name": "Send Email",
+      "webhookId": "1ca7696a-cd66-4740-9c04-90e56dae2e2c",
+      "credentials": {
+        "smtp": {
+          "id": "knfCScnUZsrjClGL",
+          "name": "Variable set smtp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "=",
+        "toEmail": "={{ $('Webhook').item.json.body.data.properties['Email Address'].email }}",
+        "subject": "={{ $('Code2').item.json.all_emails.Email1.subject }}",
+        "html": "={{ $('Code2').item.json.all_emails.Email1.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "d3bb8e3e-47a6-4bf3-8c95-77396d67ce79",
+      "name": "Send Email1",
+      "webhookId": "1ca7696a-cd66-4740-9c04-90e56dae2e2c",
+      "credentials": {
+        "smtp": {
+          "id": "knfCScnUZsrjClGL",
+          "name": "Variable set smtp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "=",
+        "toEmail": "={{ $('Webhook').item.json.body.data.properties['Email Address'].email }}",
+        "subject": "={{ $('Code2').item.json.all_emails.Email1.subject }}",
+        "html": "={{ $('Code2').item.json.all_emails.Email1.subject }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        240
+      ],
+      "id": "35894878-8a81-4bc5-8f60-774bca1783d2",
+      "name": "Send Email2",
+      "webhookId": "1ca7696a-cd66-4740-9c04-90e56dae2e2c",
+      "credentials": {
+        "smtp": {
+          "id": "knfCScnUZsrjClGL",
+          "name": "Variable set smtp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "=",
+        "toEmail": "={{ $('Webhook').item.json.body.data.properties['Email Address'].email }}",
+        "subject": "={{ $('Code2').item.json.all_emails.Email2.subject }}",
+        "html": "={{ $('Code2').item.json.all_emails.Email2.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        688,
+        240
+      ],
+      "id": "8ce5d17e-8868-4560-9ba2-ada5d858e8f4",
+      "name": "Send Email3",
+      "webhookId": "1ca7696a-cd66-4740-9c04-90e56dae2e2c",
+      "credentials": {
+        "smtp": {
+          "id": "knfCScnUZsrjClGL",
+          "name": "Variable set smtp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "=",
+        "toEmail": "={{ $('Webhook').item.json.body.data.properties['Email Address'].email }}",
+        "subject": "={{ $('Code2').item.json.all_emails.Email1.subject }}",
+        "html": "={{ $('Code2').item.json.all_emails.Email1.subject }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        512
+      ],
+      "id": "dc07d9ba-a08f-423f-afe5-cd3d52c903d7",
+      "name": "Send Email4",
+      "webhookId": "1ca7696a-cd66-4740-9c04-90e56dae2e2c",
+      "credentials": {
+        "smtp": {
+          "id": "knfCScnUZsrjClGL",
+          "name": "Variable set smtp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "=",
+        "toEmail": "={{ $('Webhook').item.json.body.data.properties['Email Address'].email }}",
+        "subject": "={{ $('Code2').item.json.all_emails.Email2.subject }}",
+        "html": "={{ $('Code2').item.json.all_emails.Email2.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        688,
+        0
+      ],
+      "id": "fd9b24e7-80b8-4263-8a9a-9598fb09a98b",
+      "name": "Send Email5",
+      "webhookId": "1ca7696a-cd66-4740-9c04-90e56dae2e2c",
+      "credentials": {
+        "smtp": {
+          "id": "knfCScnUZsrjClGL",
+          "name": "Variable set smtp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "=",
+        "toEmail": "={{ $('Webhook').item.json.body.data.properties['Email Address'].email }}",
+        "subject": "={{ $('Code2').item.json.all_emails.Email3.subject }}",
+        "html": "={{ $('Code2').item.json.all_emails.Email3.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1088,
+        0
+      ],
+      "id": "7b4e8202-a41b-4e2d-b371-f222f289002d",
+      "name": "Send Email6",
+      "webhookId": "1ca7696a-cd66-4740-9c04-90e56dae2e2c",
+      "credentials": {
+        "smtp": {
+          "id": "knfCScnUZsrjClGL",
+          "name": "Variable set smtp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "contactId": {
+          "__rl": true,
+          "value": "={{ $('Webhook').item.json.body.data.id }}",
+          "mode": "id"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.1,
+      "position": [
+        -2288,
+        160
+      ],
+      "id": "c2eda34c-54c6-45a9-8731-0f86756a5fba",
+      "name": "HubSpot"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1872,
+        432
+      ],
+      "id": "7888c759-c2e5-401c-a976-b8fb9ca42ff2",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
+            "node": "Send Email1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "HubSpot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait6": {
+      "main": [
+        [
+          {
+            "node": "Send Email5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait7": {
+      "main": [
+        [
+          {
+            "node": "Send Email6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait5": {
+      "main": [
+        [
+          {
+            "node": "Send Email2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait8": {
+      "main": [
+        [
+          {
+            "node": "Send Email3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait9": {
+      "main": [
+        [
+          {
+            "node": "Send Email4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email1": {
+      "main": [
+        [
+          {
+            "node": "Wait6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email2": {
+      "main": [
+        [
+          {
+            "node": "Wait8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email5": {
+      "main": [
+        [
+          {
+            "node": "Wait7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HubSpot": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "221175af-df4a-4e5c-8f07-c1bdbaaa503f",
+  "meta": {
+    "instanceId": "1f9b134c3525ad50a35177621a05ade8c403caae1fa8ec11e75753428fe762ed"
+  },
+  "id": "1rqgp8so3TwJhdiT",
+  "tags": [
+    {
+      "createdAt": "2025-06-08T14:41:22.944Z",
+      "updatedAt": "2025-06-08T14:41:22.944Z",
+      "id": "nK13yz0RxwNTem32",
+      "name": "Lead Magnet"
+    }
+  ]
+}

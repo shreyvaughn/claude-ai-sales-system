@@ -1,0 +1,339 @@
+{
+  "name": "meeting_notes",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "propsect-notes-to-closer",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d7ddca65-d83d-4ae6-b265-81fc4bfe8771",
+      "name": "Prospect Notes Maker",
+      "webhookId": "123ef285-33dc-41e3-88a7-75f97962deea"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "folderId": "default",
+        "title": "Doc Name"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "cc48c14e-9ae9-4730-b51b-06988fab6324",
+      "name": "create doc",
+      "credentials": {
+        "googleApi": {
+          "id": "3tg5meqVyn4RwtNR",
+          "name": "Google Service Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('generate text1').item.json.text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        848,
+        0
+      ],
+      "id": "9be2113f-cbad-4298-9182-272187012cd1",
+      "name": "update doc text",
+      "credentials": {
+        "googleApi": {
+          "id": "3tg5meqVyn4RwtNR",
+          "name": "Google Service Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C08DLUQ7S85",
+          "mode": "list",
+          "cachedResultName": "YOUR_SLACK_CHANNEL"
+        },
+        "text": "=Here you go with the prospect's doc: https://docs.google.com/document/d/{{ $json.documentId }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1728,
+        0
+      ],
+      "id": "06f602c9-9fbe-4a34-86b1-11850b1fde47",
+      "name": "Slack",
+      "webhookId": "9c4cb0c2-737a-4408-8397-83771d133726",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "mQE0lXAvkRMj5Eip",
+          "name": "Slack OAuth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# Down below is a call transcript and a call Summary of a Call sent by Acme Corop to one of their prospects.\n\nYou have to perfectly create a highly detailed document for these things, and in the end output a properly formatted and organized document.\n\nHere is the call transcript:\n\n{{ $json['call transcript'] }}\n\n\nAnd here is the call summary:\n\n{{ $json['call summary'] }}\n\n\n# In the final output, do not give lines like: here is your document / understood, I will now create a detailed document, etc. lines telling me that here is the document n=or that whatever you're doing or have done !\n\nJust output the text of the document properly formatted in your final output, NO OTHER TEXT !",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        272,
+        0
+      ],
+      "id": "1239b890-789f-4530-bc80-9a72a4414828",
+      "name": "generate text1"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "content-wf-copy-guide",
+          "mode": "list",
+          "cachedResultName": "content-wf-copy-guide"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.2,
+      "position": [
+        1168,
+        0
+      ],
+      "id": "880d7f32-538f-4573-9ff2-f40091b528e7",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "ICgGtTv5w3F6JopN",
+          "name": "Pinecone API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        240
+      ],
+      "id": "a544bb75-ca6f-4179-8577-22ccaa61816c",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        464
+      ],
+      "id": "5847329d-9728-45ad-9b52-f6c5ce7eee79",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1152,
+        224
+      ],
+      "id": "9b90725e-2795-416e-ac3b-267b7b68837c",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        192
+      ],
+      "id": "c92e199d-eded-4de3-85d8-69a5a73094ec",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Prospect Notes Maker": [
+      {
+        "json": {
+          "call transcript": "Agent: Hey John, can you hear me alright?\n\nUser: Hello? Yes, I can hear you clearly.\n\nAgent: Perfect. Thanks for confirming. So, I was told you're checking us out because you're curious about how realistic this voice sounds, right?\n\nUser: Yeah, I was really intrigued. It’s pretty impressive so far.\n\nAgent: Appreciate that! Mind if I ask you a couple of quick questions about how you're currently handling sales in your company?\n\nUser: Sure, go ahead.\n\nAgent: Awesome. From what I gathered, it looks like LinkedIn lead magnets are your primary source of leads, right? Things like lead gen forms, gated content, and maybe connection-based outreach?\n\nUser: That’s correct. We’ve been focusing heavily on LinkedIn for the past few months. It’s been decent, but we’re still exploring ways to improve conversion quality.\n\nAgent: Makes sense. That’s actually something we specialize in helping with. Would you be open to a deeper conversation around optimizing that pipeline?\n\nUser: Yeah, I’d be interested. Could you go ahead and book a call for me? I’m free the day after tomorrow at 5 PM.\n\nAgent: Got it. One moment... Okay, John — your appointment is confirmed for the day after tomorrow at 5 PM. You’ll get a calendar invite shortly.\n\nUser: Great, looking forward to it!\n\nAgent: Likewise! Talk to you soon",
+          "call summary": "John, intrigued by the natural quality of the AI voice, engaged in a discovery conversation where he confirmed LinkedIn lead magnets (including forms, gated content, and outreach) as his primary sales channel, acknowledged limitations in current lead-to-conversion performance, expressed interest in optimizing his sales pipeline, and proactively scheduled a follow-up appointment for in-depth discussion, confirmed for the day after tomorrow at 5 PM"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Prospect Notes Maker": {
+      "main": [
+        [
+          {
+            "node": "generate text1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create doc": {
+      "main": [
+        [
+          {
+            "node": "update doc text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update doc text": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate text1": {
+      "main": [
+        [
+          {
+            "node": "create doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "generate text1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6402e0aa-1d64-4c7c-a64e-cd2e7e9d6ce0",
+  "meta": {
+    "instanceId": "1f9b134c3525ad50a35177621a05ade8c403caae1fa8ec11e75753428fe762ed"
+  },
+  "id": "AXD0O4yEyW7mTKVU",
+  "tags": [
+    {
+      "createdAt": "2025-06-08T14:41:22.944Z",
+      "updatedAt": "2025-06-08T14:41:22.944Z",
+      "id": "nK13yz0RxwNTem32",
+      "name": "Lead Magnet"
+    }
+  ]
+}

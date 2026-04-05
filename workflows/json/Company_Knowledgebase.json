@@ -1,0 +1,178 @@
+{
+  "name": "Company Knowledgebase",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        180
+      ],
+      "id": "e1a9b7b9-89b6-4e9d-a6ba-811c3eeb35f5",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "17eXa48NKeLLHcnPZq98CbzS621q3lfM-iUutB8yEOHs",
+          "mode": "list",
+          "cachedResultName": "Context & Guidelines",
+          "cachedResultUrl": "https://docs.google.com/document/d/17eXa48NKeLLHcnPZq98CbzS621q3lfM-iUutB8yEOHs/edit?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        80,
+        180
+      ],
+      "id": "048d5f31-6b3a-44cd-9a64-e18bfe91a5e7",
+      "name": "Download File"
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        480,
+        380
+      ],
+      "id": "aa976528-e770-4681-8265-296c4dad4b46",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        600,
+        560
+      ],
+      "id": "6cbd35bf-0a9f-4340-ac62-d0438ced6d40",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        260,
+        420
+      ],
+      "id": "43b27448-75d2-4ef4-a21e-c929eb89f559",
+      "name": "Embeddings_OpenAI"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "content-workflow",
+          "mode": "list",
+          "cachedResultName": "content-workflow"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        180
+      ],
+      "id": "b50081e8-c4fa-41c4-a845-b9536d9def5b",
+      "name": "Pinecone Vector Store"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings_OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f6b16a01-ffdd-4de9-8b1b-bc10ba532587",
+  "meta": {
+    "instanceId": "a810fa5950548434aba1002ee94e6b74da80f893e003dacd22d1ee3030eea57f"
+  },
+  "id": "z7asfoCh0Qt8JF3x",
+  "tags": [
+    {
+      "createdAt": "2025-06-28T22:41:20.827Z",
+      "updatedAt": "2025-06-28T22:41:20.827Z",
+      "id": "YOJ7X0vEkMOnVfd2",
+      "name": "SDR"
+    },
+    {
+      "createdAt": "2025-06-28T19:13:51.265Z",
+      "updatedAt": "2025-06-28T19:13:51.265Z",
+      "id": "oXcxxeyIVNmTXOD9",
+      "name": "Lead Magnet"
+    }
+  ]
+}

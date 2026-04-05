@@ -1,0 +1,396 @@
+{
+  "name": "AI_Personal_Assistant(1)",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "google/gemini-2.0-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        224,
+        224
+      ],
+      "id": "ebab5da8-b78e-40c9-8da0-f16c12ca865e",
+      "name": "Gemini 2.0 Flash"
+    },
+    {
+      "parameters": {
+        "trigger": [
+          "app_mention"
+        ],
+        "channelId": {
+          "__rl": true,
+          "value": "C08L6NPLT98",
+          "mode": "list",
+          "cachedResultName": "youtube"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slackTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "81b1e3b4-2a3d-41ee-b4d7-ebbaae0ebbaf",
+      "name": "Slack Trigger",
+      "webhookId": "f5b6119f-375e-44ad-8e27-ac8549165b21"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('message0_Text', `Browse the internet and find info if needed`, 'string') }}"
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexityTool",
+      "typeVersion": 1,
+      "position": [
+        608,
+        352
+      ],
+      "id": "a01866cc-8989-452a-b399-6e26c61deab4",
+      "name": "Message a model in Perplexity"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool to get anything related to calendar, meetings, event",
+        "workflowId": {
+          "__rl": true,
+          "value": "970mNCaMSgB1fThr",
+          "mode": "list",
+          "cachedResultName": "Calendar Agent (PA)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1200,
+        240
+      ],
+      "id": "83de6f98-8631-408f-af79-e6110aa5e5ac",
+      "name": "Calendar Agent"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool for anything related to Email/Gmail",
+        "workflowId": {
+          "__rl": true,
+          "value": "GnbFFQwPNBsl7fjZ",
+          "mode": "list",
+          "cachedResultName": "Email Agent (PA)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        320
+      ],
+      "id": "183fd214-609b-470d-a0b2-e401b9c0a1fb",
+      "name": "Email Agent"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool for getting info about a contact/lead/prospect or CRM related",
+        "workflowId": {
+          "__rl": true,
+          "value": "xX4m8bPAi2nOq4PM",
+          "mode": "list",
+          "cachedResultName": "CRM Agent (PA)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        912,
+        400
+      ],
+      "id": "faddbbd0-f1b7-4b20-b091-b250d15dcaa8",
+      "name": "CRM Agent"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C08L6NPLT98",
+          "mode": "list",
+          "cachedResultName": "youtube"
+        },
+        "text": "={{ $('Agentic Personal Assistant').item.json.output.trimEnd() }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1184,
+        0
+      ],
+      "id": "cb9f1f90-52a2-41ff-949a-2e8f71ad4f47",
+      "name": "Send a message",
+      "webhookId": "1a0e0d6b-891f-4e1a-b5ac-be6822a00dcd"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this tool to send SMS to particular contact",
+        "method": "POST",
+        "url": "https://api.contiguity.co/send/text",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <token>"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "to",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', `Phone number with country code`, 'string') }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', `Message to send`, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        768,
+        400
+      ],
+      "id": "05710cc8-f7cd-4979-ac60-23d4c620b407",
+      "name": "send sms"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Slack Trigger').item.json.blocks[0].elements[0].elements[1].text }}",
+        "options": {
+          "systemMessage": "=Here is the current date/time: {{ $now }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        624,
+        0
+      ],
+      "id": "2dd3674b-a1a6-41e3-bca6-2196c4153774",
+      "name": "Agentic Personal Assistant"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.blocks[0].elements[0].elements[1].text }}",
+        "options": {
+          "systemMessage": "=# Overview\nYou are an AI agent responsible for selecting the most suitable large language model to handle a given user request. Choose only one model from the list below based strictly on each model’s strengths.  \n\n## Instructions\nAnalyze the user’s request and return the exact model name that best fits the task. Your response must contain only the model name. No explanations, no formatting, no extra text.\n\n## Available Models and Strengths\n- `google/gemini-2.0-flash-001`: best for fast, lightweight, conversational tasks or simple general-purpose queries  \n- `openai/gpt-4.1-mini`: best for tool calling creating calendar events or getting contact information\n- `anthropic/claude-3.7-sonnet`: best for writing high-quality content, research summaries, or tasks requiring clear, professional language  \n- `openai/o1`: best for deep logical reasoning and coding in a conversational way  \n\n### Output Format:\nReturn only one of the following strings:\n- google/gemini-2.0-flash-001  \n- openai/gpt-4.1-mini  \n- anthropic/claude-3.7-sonnet  \n- openai/o1\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        240,
+        0
+      ],
+      "id": "ab7cb8a0-cf9b-4917-8cc0-c501e79e6f14",
+      "name": "Dynamic AI Selector"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        224
+      ],
+      "id": "e2797b94-1461-4cd2-8f76-0196ddd11a13",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "5xcfskuu2WudNB7x",
+          "name": "OpenAI API Key"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gemini 2.0 Flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Dynamic AI Selector",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack Trigger": {
+      "main": [
+        [
+          {
+            "node": "Dynamic AI Selector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model in Perplexity": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agentic Personal Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agentic Personal Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agentic Personal Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CRM Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agentic Personal Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send sms": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agentic Personal Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agentic Personal Assistant": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dynamic AI Selector": {
+      "main": [
+        [
+          {
+            "node": "Agentic Personal Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agentic Personal Assistant",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c0cbcc5c-4f09-42d7-b701-455c66e61f35",
+  "meta": {
+    "instanceId": "1f9b134c3525ad50a35177621a05ade8c403caae1fa8ec11e75753428fe762ed"
+  },
+  "id": "8UfE3B1nJS7ppHK8",
+  "tags": [
+    {
+      "createdAt": "2025-08-12T15:50:45.123Z",
+      "updatedAt": "2025-08-12T15:50:45.123Z",
+      "id": "eOQkkG3KUt3wYBV4",
+      "name": "AI Personal Assistant"
+    }
+  ]
+}
