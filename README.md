@@ -1,6 +1,6 @@
 # Claude AI Sales System
 
-**12 AI-powered sales automation workflows for n8n. Built from 18,000+ real conversations and $20M+ pipeline.**
+**12 AI-powered sales automation workflows for n8n. Built from 18,000+ real conversations and $5M+ pipeline.**
 
 Stop doing sales manually. This system automates lead finding, cold outreach, call analysis, follow-ups, and meeting booking -- all running 24/7 on n8n with AI agents doing the heavy lifting.
 
